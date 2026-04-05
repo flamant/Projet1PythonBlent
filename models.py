@@ -49,7 +49,93 @@ class User(db.Model):
     
     id = db.Column(db.String(100), primary_key=True)
     password = db.Column(db.String(20), nullable=False)
+    statut = db.Column(db.String(20), nullable=False)
+    client = Column(Boolean, unique=False, default=False)
+    administrator = Column(Boolean, unique=False, default=False)
+
 
     
     def __repr__(self):
         return f'<User {self.id}>'
+
+
+def add_sample_products_and_add_admin():
+    # Créer quelques produits
+    products = [
+        Product(id='prod001', name='Azus TUF F15', description='PC Portable Gamer', price=899, stock=10),
+        Product(id='prod002', name='UGreen Souris sans fil', description='Souris ergonomique', price=49.99, stock=20),
+        Product(id='prod003', name='Logitech Clavier mécanique', description='Clavier pour gaming', price=129, stock=15)
+    ]
+    
+    # Ajouter les produits à la session
+    session.add_all(products)
+    
+    # Commit pour sauvegarder les changements dans la base de données
+    session.commit()
+    print("Produits ajoutés avec succès!")
+
+    users = [
+        User(id='admin@login.fr', password='admin', client=False, administrator=True)
+    ]
+
+        # Ajouter les produits à la session
+    session.add_all(users)
+    
+    # Commit pour sauvegarder les changements dans la base de données
+    session.commit()
+    print("administrator ajouté avec succès!")
+
+def read_products():
+    # Récupérer tous les produits
+    all_products = session.query(Product).all()
+    print("\nTous les produits:")
+    for product in all_products:
+        print(product)
+    
+def read_specific_product(product_id):
+    # Récupérer un produit spécifique
+    specific_product = session.query(Product).filter_by(id=self._product_id).first()
+    print("\nProduit spécifique:")
+    print(specific_product)
+    
+
+
+def update_product(product_id):
+    # Récupérer le produit à mettre à jour
+    product = session.query(Product).filter_by(id=self._product_id).first()
+    
+    if product:
+        # Mettre à jour les attributs
+        product.price = 39.99
+        product.stock = 25
+        
+        # Commit pour sauvegarder les changements
+        session.commit()
+        print("\nProduit mis à jour:")
+        print(product)
+    else:
+        print("\nProduit non trouvé!")
+
+def delete_product(product_id):
+    # Récupérer le produit à supprimer
+    product = session.query(Product).filter_by(id=self._product_id).first()
+    
+    if product:
+        # Supprimer le produit
+        session.delete(product)
+        
+        # Commit pour sauvegarder les changements
+        session.commit()
+        print("\nProduit supprimé!")
+    else:
+        print("\nProduit non trouvé!")
+
+add_sample_products_and_add_admin()
+
+
+print("\nProduits après opérations:")
+for product in session.query(Product).all():
+    print(product)
+
+session.close()
+engine.dispose()
