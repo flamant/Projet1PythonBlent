@@ -42,3 +42,14 @@ class CartItem(db.Model):
     
     def __repr__(self):
         return f'<CartItem {self.id}, Product: {self.product_id}, Qty: {self.quantity}>'
+
+
+class User(db.Model):
+    __tablename__ = 'users'
+    
+    id = db.Column(db.String(100), primary_key=True)
+    password = db.Column(db.String(20), nullable=False)
+
+    
+    def __repr__(self):
+        return f'<User {self.id}>'
