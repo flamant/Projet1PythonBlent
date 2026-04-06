@@ -81,10 +81,10 @@ def add_sample_products_and_add_admin():
     print("Produits ajoutés avec succès!")
 
     users = [
-        User(id='admin@login.fr', password='admin', client=False, administrator=True)
+        User(id='admin@login.fr', password='admin', statut='administrator',client=False, administrator=True)
     ]
 
-        # Ajouter les produits à la session
+    # Ajouter l'utilisateur à la session
     session.add_all(users)
     
     # Commit pour sauvegarder les changements dans la base de données
@@ -136,7 +136,7 @@ def delete_product(product_id):
     else:
         print("\nProduit non trouvé!")
 
- def create_user(user):
+def create_user(user):
     if users._class_._name_ == 'User':
         if len(user.id) > 0 and len(user.password) > 0:
             if (user.client and not user.administrator) or (user.administrator and not user.client):
@@ -145,8 +145,10 @@ def delete_product(product_id):
                     raise ValueError("L'utilisateur existe déjà en base de donnée.")
                 except NoResultFound as e:
                     typeDeCompte = 'client' if user.client else 'administrateur'
+                    if user.administrator and user.statut == 'client':
+                        raise ValueError("Un client ne peut pas créer un compte administrateur.")
                     print("Creation d'un nouveau compte ",typeDeCompte)
-
+                    print("id=",user.id)
                     session = Session()
                     session.add(user)
                     session.commit()
@@ -158,7 +160,19 @@ def delete_product(product_id):
         else:
             raise ValueError("L'identifiant et le mot de passe doivent être renseigné.")
     else:
-        raise ValueError("L'utilisateur n'est pas valide.")       
+        raise ValueError("L'utilisateur n'est pas valide.")
+
+def authenticate(id, password):  
+    try: 
+        session = Session()
+        user_db = session.query(User).filter_by(id=user.id).one() 
+        session.commit()
+        session.close()
+        return True 
+    except NoResultFound as e: 
+        print("Cet utilisateur n'existe pas en base.") 
+        return False
+
 
 add_sample_products_and_add_admin()
 
