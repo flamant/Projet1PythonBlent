@@ -1,8 +1,14 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
+
+engine = create_engine('sqlite:///basic_store.db', echo=False)
+Session = sessionmaker(engine)
+
 # Initialisation de l'extension SQLAlchemy
 db = SQLAlchemy()
+
+
 
 # Définition des modèles
 class Product(db.Model):
@@ -129,6 +135,30 @@ def delete_product(product_id):
         print("\nProduit supprimé!")
     else:
         print("\nProduit non trouvé!")
+
+ def create_user(user):
+    if users._class_._name_ == 'User':
+        if len(user.id) > 0 and len(user.password) > 0:
+            if (user.client and not user.administrator) or (user.administrator and not user.client):
+                try:
+                    user_db = session.query(User).filter_by(id=user.id).one()
+                    raise ValueError("L'utilisateur existe déjà en base de donnée.")
+                except NoResultFound as e:
+                    typeDeCompte = 'client' if user.client else 'administrateur'
+                    print("Creation d'un nouveau compte ",typeDeCompte)
+
+                    session = Session()
+                    session.add(user)
+                    session.commit()
+                    session.close()
+                except ValueError as e1:
+                    raise ValueError("L'utilisateur existe déjà en base de donnée.")
+            else:
+                raise ValueError("Soit l'utilisateur est client, soit il est administrateur.")
+        else:
+            raise ValueError("L'identifiant et le mot de passe doivent être renseigné.")
+    else:
+        raise ValueError("L'utilisateur n'est pas valide.")       
 
 add_sample_products_and_add_admin()
 
