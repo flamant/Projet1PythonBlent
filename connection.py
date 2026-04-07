@@ -7,15 +7,14 @@ JWT_SECRET = "d3fb12750c2eff92120742e1b334479e"
 app = Flask(__name__)
 
 @app.route('/api/auth/register', methods=["POST"])
-def connection_and_generate_token():
+def register_utilisateur():
     body = request.get_json()
     id = body.get("id", "")
     statutDuDemandeur = body.get("statut")
     creerClient = body.get("client")
     creerAdministrateur = body.get("administrator")
     typeDeCompte = 'le client' if user.statut == "client" else "l'administrateur"
-    password = request.headers.get("Password", "0")
-    user = User
+    password = request.headers.get("password", "0")
     create_user(User(id, password, statutDuDemandeur, creerClient, creerAdministrateur))
 
 

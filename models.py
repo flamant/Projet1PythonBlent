@@ -177,9 +177,9 @@ def authenticate(id, password):
 add_sample_products_and_add_admin()
 
 
-print("\nProduits après opérations:")
-for product in session.query(Product).all():
-    print(product)
+#print("\nProduits après opérations:")
+#for product in session.query(Product).all():
+#    print(product)
 
-session.close()
+#session.close()
 engine.dispose()
