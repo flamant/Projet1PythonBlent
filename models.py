@@ -1,12 +1,13 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from flask import Flask
 
 
-engine = create_engine('sqlite:///basic_store.db', echo=False)
-Session = sessionmaker(engine)
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///basic_store.db'
+db = SQLAlchemy(app)
 
-# Initialisation de l'extension SQLAlchemy
-db = SQLAlchemy()
+
 
 
 
@@ -56,13 +57,16 @@ class User(db.Model):
     id = db.Column(db.String(100), primary_key=True)
     password = db.Column(db.String(20), nullable=False)
     statut = db.Column(db.String(20), nullable=False)
-    client = Column(Boolean, unique=False, default=False)
-    administrator = Column(Boolean, unique=False, default=False)
+    client = db.Column(db.Boolean, unique=False, default=False)
+    administrator = db.Column(db.Boolean, unique=False, default=False)
 
 
     
     def __repr__(self):
         return f'<User {self.id}>'
+
+with app.app_context():
+    db.create_all()  # crée les tables
 
 
 def add_sample_products_and_add_admin():
@@ -74,10 +78,10 @@ def add_sample_products_and_add_admin():
     ]
     
     # Ajouter les produits à la session
-    session.add_all(products)
+    db.session.add_all(products)
     
     # Commit pour sauvegarder les changements dans la base de données
-    session.commit()
+    db.session.commit()
     print("Produits ajoutés avec succès!")
 
     users = [
@@ -85,22 +89,28 @@ def add_sample_products_and_add_admin():
     ]
 
     # Ajouter l'utilisateur à la session
-    session.add_all(users)
+    db.session.add_all(users)
     
     # Commit pour sauvegarder les changements dans la base de données
-    session.commit()
+    db.session.commit()
     print("administrator ajouté avec succès!")
 
 def read_products():
     # Récupérer tous les produits
-    all_products = session.query(Product).all()
+    all_products = db.session.query(Product).all()
+    # Ajouter à la session
+    db.session.add(all_products)
+    db.session.commit()
     print("\nTous les produits:")
     for product in all_products:
         print(product)
     
 def read_specific_product(product_id):
     # Récupérer un produit spécifique
-    specific_product = session.query(Product).filter_by(id=self._product_id).first()
+    specific_product = db.session.query(Product).filter_by(id=self._product_id).first()
+    # Ajouter à la session
+    db.session.add(specific_product)
+    db.session.commit()
     print("\nProduit spécifique:")
     print(specific_product)
     
@@ -108,15 +118,17 @@ def read_specific_product(product_id):
 
 def update_product(product_id):
     # Récupérer le produit à mettre à jour
-    product = session.query(Product).filter_by(id=self._product_id).first()
-    
+    product = db.session.query(Product).filter_by(id=self._product_id).first()
+    # Ajouter à la session
+    db.session.add(product)
+    db.session.commit()
     if product:
         # Mettre à jour les attributs
         product.price = 39.99
         product.stock = 25
         
         # Commit pour sauvegarder les changements
-        session.commit()
+        db.session.commit()
         print("\nProduit mis à jour:")
         print(product)
     else:
@@ -124,14 +136,16 @@ def update_product(product_id):
 
 def delete_product(product_id):
     # Récupérer le produit à supprimer
-    product = session.query(Product).filter_by(id=self._product_id).first()
-    
+    product = db.session.query(Product).filter_by(id=self._product_id).first()
+    # Ajouter à la session
+    db.session.add(product)
+    db.session.commit()
     if product:
         # Supprimer le produit
-        session.delete(product)
+        db.session.delete(product)
         
         # Commit pour sauvegarder les changements
-        session.commit()
+        db.session.commit()
         print("\nProduit supprimé!")
     else:
         print("\nProduit non trouvé!")
@@ -141,7 +155,7 @@ def create_user(user):
         if len(user.id) > 0 and len(user.password) > 0:
             if (user.client and not user.administrator) or (user.administrator and not user.client):
                 try:
-                    user_db = session.query(User).filter_by(id=user.id).one()
+                    user_db = db.session.query(User).filter_by(id=user.id).one()
                     raise ValueError("L'utilisateur existe déjà en base de donnée.")
                 except NoResultFound as e:
                     typeDeCompte = 'client' if user.client else 'administrateur'
@@ -149,10 +163,9 @@ def create_user(user):
                         raise ValueError("Un client ne peut pas créer un compte administrateur.")
                     print("Creation d'un nouveau compte ",typeDeCompte)
                     print("id=",user.id)
-                    session = Session()
-                    session.add(user)
-                    session.commit()
-                    session.close()
+                    # Ajouter à la session
+                    db.session.add(user)
+                    db.session.commit()
                 except ValueError as e1:
                     raise ValueError("L'utilisateur existe déjà en base de donnée.")
             else:
@@ -164,10 +177,9 @@ def create_user(user):
 
 def authenticate(id, password):  
     try: 
-        session = Session()
-        user_db = session.query(User).filter_by(id=user.id).one() 
-        session.commit()
-        session.close()
+        user_db = db.session.query(User).filter_by(id=user.id).one() 
+        db.session.add(user_db)
+        db.session.commit()        
         return True 
     except NoResultFound as e: 
         print("Cet utilisateur n'existe pas en base.") 
@@ -182,4 +194,3 @@ add_sample_products_and_add_admin()
 #    print(product)
 
 #session.close()
-engine.dispose()

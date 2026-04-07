@@ -1,10 +1,12 @@
 import jwt
 from flask import Flask, request, jsonify
 from datetime import datetime, timedelta
+from models import create_user
+from models import app
+
 
 JWT_SECRET = "d3fb12750c2eff92120742e1b334479e"
 
-app = Flask(__name__)
 
 @app.route('/api/auth/register', methods=["POST"])
 def register_utilisateur():
@@ -13,7 +15,7 @@ def register_utilisateur():
     statutDuDemandeur = body.get("statut")
     creerClient = body.get("client")
     creerAdministrateur = body.get("administrator")
-    typeDeCompte = 'le client' if user.statut == "client" else "l'administrateur"
+    typeDeCompte = 'le client' if statutDuDemandeur == "client" else "l'administrateur"
     password = request.headers.get("password", "0")
     create_user(User(id, password, statutDuDemandeur, creerClient, creerAdministrateur))
 

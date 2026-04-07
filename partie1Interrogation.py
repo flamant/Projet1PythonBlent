@@ -7,5 +7,5 @@ json={
     'client': True,
     'administrator':False
 })
-print(req.status_code, req.json())
+print(req.status_code)
 
