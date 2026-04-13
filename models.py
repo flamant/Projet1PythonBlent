@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask import Flask
+from sqlalchemy.orm.exc import NoResultFound
 
 
 app = Flask(__name__)
@@ -76,9 +77,10 @@ def add_sample_products_and_add_admin():
         Product(id='prod002', name='UGreen Souris sans fil', description='Souris ergonomique', price=49.99, stock=20),
         Product(id='prod003', name='Logitech Clavier mécanique', description='Clavier pour gaming', price=129, stock=15)
     ]
-    
-    # Ajouter les produits à la session
-    db.session.add_all(products)
+
+        # Merge évite les doublons si le script est relancé
+    for product in products:
+        db.session.merge(product)
     
     # Commit pour sauvegarder les changements dans la base de données
     db.session.commit()
@@ -88,8 +90,9 @@ def add_sample_products_and_add_admin():
         User(id='admin@login.fr', password='admin', statut='administrator',client=False, administrator=True)
     ]
 
-    # Ajouter l'utilisateur à la session
-    db.session.add_all(users)
+        # Merge évite les doublons si le script est relancé
+    for user in users:
+        db.session.merge(user)
     
     # Commit pour sauvegarder les changements dans la base de données
     db.session.commit()
@@ -151,11 +154,11 @@ def delete_product(product_id):
         print("\nProduit non trouvé!")
 
 def create_user(user):
-    if users._class_._name_ == 'User':
+    if user.__class__.__name__ == 'User':
         if len(user.id) > 0 and len(user.password) > 0:
             if (user.client and not user.administrator) or (user.administrator and not user.client):
                 try:
-                    user_db = db.session.query(User).filter_by(id=user.id).one()
+                    db.session.query(User).filter_by(id=user.id).one()
                     raise ValueError("L'utilisateur existe déjà en base de donnée.")
                 except NoResultFound as e:
                     typeDeCompte = 'client' if user.client else 'administrateur'
@@ -166,8 +169,6 @@ def create_user(user):
                     # Ajouter à la session
                     db.session.add(user)
                     db.session.commit()
-                except ValueError as e1:
-                    raise ValueError("L'utilisateur existe déjà en base de donnée.")
             else:
                 raise ValueError("Soit l'utilisateur est client, soit il est administrateur.")
         else:
@@ -177,16 +178,14 @@ def create_user(user):
 
 def authenticate(id, password):  
     try: 
-        user_db = db.session.query(User).filter_by(id=user.id).one() 
-        db.session.add(user_db)
-        db.session.commit()        
+        db.session.query(User).filter_by(id=id, password=password).one()    
         return True 
-    except NoResultFound as e: 
+    except NoResultFound: 
         print("Cet utilisateur n'existe pas en base.") 
         return False
 
-
-add_sample_products_and_add_admin()
+with app.app_context():
+    add_sample_products_and_add_admin()
 
 
 #print("\nProduits après opérations:")
