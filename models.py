@@ -102,7 +102,7 @@ def read_products():
     # Récupérer tous les produits
     all_products = db.session.query(Product).all()
     # Ajouter à la session
-    db.session.add(all_products)
+    db.session.add_all(all_products)
     db.session.commit()
     print("\nTous les produits:")
     for product in all_products:

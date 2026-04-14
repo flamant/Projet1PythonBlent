@@ -1,12 +1,18 @@
 import jwt
 from flask import Flask, request, jsonify
 from datetime import datetime, timedelta
-from models import create_user, authenticate, User
+from models import create_user, authenticate, User, read_products, Product
 from models import app
 
 
 JWT_SECRET = "d3fb12750c2eff92120742e1b334479e"
 
+def decode_token(token):
+    return jwt.decode(
+        token,
+        JWT_SECRET,
+        algorithms="HS256"
+    )
 
 @app.route('/', methods=["GET"])
 def index():
@@ -52,6 +58,20 @@ def connection_and_generate_token():
             JWT_SECRET,
             algorithm="HS256"
         )
-        return jsonify({"token": token + "pour " + typeDeCompte + "id=" + id}), 200
+        data = {"token": token,
+        "message": token + "pour " + typeDeCompte + "id=" + id}
+        return jsonify(data),200
     else:
         return jsonify({"error": "Identifiant/Mot de passe invalides."}), 401
+
+@app.route('/api/produits', methods=["GET"])
+def getProductList():
+    print("ca passe1")
+    token = request.headers.get("token", "0")
+    print("ca passe2")
+    if decode_token(token):
+        print("ca passe3")
+        read_products()
+        print("ca passe 4")
+        return {"message": "Ok !"}, 200
+    return {"error": "Jeton d'accès invalide."}, 401
