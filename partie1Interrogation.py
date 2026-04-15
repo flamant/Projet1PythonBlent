@@ -1,17 +1,17 @@
 import requests
 
-req = requests.post("http://127.0.0.1:5000/api/auth/register", headers={"password": "antoine"}, 
+req = requests.post("http://127.0.0.1:5000/api/auth/register", headers={"password": "admin"}, 
 json={
-    'id': "flamant@club-internet.fr",
+    'id': "admin@login.fr",
     'statut': 'client',
     'client': True,
     'administrator':False
 })
 print(req.status_code)
 
-req = requests.post("http://127.0.0.1:5000/api/auth/login", headers={"password": "antoine"}, 
+req = requests.post("http://127.0.0.1:5000/api/auth/login", headers={"password": "admin"}, 
 json={
-    'id': "flamant@club-internet.fr",
+    'id': "admin@login.fr",
     'statut': 'client'
 })
 print(req.status_code)
@@ -34,4 +34,5 @@ json={
     'stock': 30
 })
 print(req.status_code)
+print(req.json().get("error"))
 

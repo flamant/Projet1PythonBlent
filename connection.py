@@ -82,7 +82,7 @@ def getSpecificProduct(id):
 
 
 @app.route('/api/produits', methods=["POST"])
-def createNewProduct(Product):
+def createNewProduct():
     token = request.headers.get("token", "0")
     body = request.get_json()
     id = body.get("id", "")
