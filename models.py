@@ -64,7 +64,7 @@ class User(db.Model):
 
     
     def __repr__(self):
-        return f'<User {self.id}>'
+        print(self.id, self.password, self.statut, self.client, self.administrator)
 
 with app.app_context():
     db.create_all()  # crée les tables
@@ -87,7 +87,7 @@ def add_sample_products_and_add_admin():
     print("Produits ajoutés avec succès!")
 
     users = [
-        User(id='admin@login.fr', password='admin', statut='administrator',client=False, administrator=True)
+        User(id='admin@login.fr', password='admin', statut='administrateur',client=False, administrator=True)
     ]
 
         # Merge évite les doublons si le script est relancé
@@ -107,7 +107,16 @@ def read_products():
     print("\nTous les produits:")
     for product in all_products:
         print(product)
-    
+
+def get_list_of_users():
+    print("ca passe2")
+    # Récupérer tous les utilisateur
+    all_users = db.session.query(User).all()
+    print("\nTous les utilisateurs:")
+    for user in all_users:
+        print(user)    
+
+
 def read_specific_product(product_id):
     # Récupérer un produit spécifique
     specific_product = db.session.query(Product).filter_by(id=product_id).first()

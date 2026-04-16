@@ -1,7 +1,7 @@
 import jwt
 from flask import Flask, request, jsonify
 from datetime import datetime, timedelta
-from models import create_user, authenticate, User, read_products, Product, read_specific_product
+from models import create_user, authenticate, User, read_products, Product, read_specific_product, get_list_of_users
 from models import app
 
 
@@ -53,7 +53,8 @@ def connection_and_generate_token():
         token = jwt.encode(
             {
                 "exp": datetime.utcnow() + timedelta(hours=1),
-                "user": statut + id
+                "user": id,
+                "role": "administrateur"
             },
             JWT_SECRET,
             algorithm="HS256"
@@ -63,6 +64,27 @@ def connection_and_generate_token():
         return jsonify(data),200
     else:
         return jsonify({"error": "Identifiant/Mot de passe invalides."}), 401
+
+@app.route('/api/users', methods=["GET"])
+def getListOfUsers():
+    print("ca passe6")
+    token = request.headers.get("token", "0")
+    print("ca passe3")
+    payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+    print("ca passe4")
+    role = payload.get("role")
+    print("ca passe5")
+    print("ca passe0")
+    if role == "administrateur" and decode_token(token):
+        print("ca passe1")
+        get_list_of_users()
+        print("ca passe7")
+        return {"message": "Ok !"}, 200
+    else:
+        print("ca passe8")
+        return {"error": "Jeton d'accès invalide ou le role qui fait la demande n'est pas administrateur."}, 401
+
+
 
 @app.route('/api/produits', methods=["GET"])
 def getProductList():
