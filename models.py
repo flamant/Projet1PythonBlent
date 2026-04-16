@@ -64,7 +64,7 @@ class User(db.Model):
 
     
     def __repr__(self):
-        print(self.id, self.password, self.statut, self.client, self.administrator)
+        return 'id={0}, password={1}, statut={2}, client={3}, administrator={4}'.format(self.id, self.password, self.statut, self.client, self.administrator)
 
 with app.app_context():
     db.create_all()  # crée les tables
