@@ -83,3 +83,54 @@ print("get list of products.")
 print("---------------------")
 req = requests.get("http://127.0.0.1:5000/api/produits", headers={"token": token})
 print("request status is "+ str(req.status_code))
+
+
+print("create a new command ")
+print("---------------------")
+req = requests.post("http://127.0.0.1:5000/api/commandes", headers={"token": token},
+json={
+    'user_id': 'flamant@club-internet.fr',
+    'cart_id': 'cart001'
+    'cart_items' [
+        {
+            'cart_item_id': 'cartItem001',
+            'product_id': 'prod001',
+            'quantity': 10
+        },
+        {
+            'cart_item_id': 'cartItem002',
+            'product_id': 'prod002',
+            'quantity': 20           
+        },
+        {
+            'cart_item_id': 'cartItem003',
+            'product_id': 'prod003',
+            'quantity': 30
+        }
+    ]
+})
+print("request status is "+ str(req.status_code))
+
+
+class Cart(db.Model):
+    __tablename__ = 'carts'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relation avec les éléments du panier
+    items = db.relationship('CartItem', backref='cart', lazy=True, cascade='all, delete-orphan')
+    
+    def __repr__(self):
+        return f'<Cart {self.id}>'
+
+class CartItem(db.Model):
+    __tablename__ = 'cart_items'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    cart_id = db.Column(db.Integer, db.ForeignKey('carts.id'), nullable=False)
+    product_id = db.Column(db.String(10), db.ForeignKey('products.id'), nullable=False)
+    quantity = db.Column(db.Integer, default=1)
+    
+    # Relation avec le produit
+    product = db.relationship('Product', backref='cart_items')
