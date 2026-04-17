@@ -1,7 +1,7 @@
 import jwt
 from flask import Flask, request, jsonify
 from datetime import datetime, timedelta
-from models import create_user, authenticate, User, read_products, Product, read_specific_product, get_list_of_users
+from models import create_user, authenticate, User, read_products, Product, read_specific_product, get_list_of_users, create_product, update_product
 from models import app
 
 
@@ -67,21 +67,13 @@ def connection_and_generate_token():
 
 @app.route('/api/users', methods=["GET"])
 def getListOfUsers():
-    print("ca passe6")
     token = request.headers.get("token", "0")
-    print("ca passe3")
     payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-    print("ca passe4")
     role = payload.get("role")
-    print("ca passe5")
-    print("ca passe0")
     if role == "administrateur" and decode_token(token):
-        print("ca passe1")
         get_list_of_users()
-        print("ca passe7")
         return {"message": "Ok !"}, 200
     else:
-        print("ca passe8")
         return {"error": "Jeton d'accès invalide ou le role qui fait la demande n'est pas administrateur."}, 401
 
 
@@ -114,8 +106,28 @@ def createNewProduct():
     stock = body.get("stock")
     payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
     role = payload.get("role")
-    if role == "administrateur":
+    if role == "administrateur" and decode_token(token):
         create_product(Product(id=id, name=name, description=description, price=price, stock=stock))
+        return {"message": "Ok !"}, 200
+    return {"error": "seul un administrateur a le droit de créer un produit."}, 401
+
+
+@app.route('/api/produits', methods=["PUT"])
+def modifyProduct():
+    print("ca passe1")
+    token = request.headers.get("token", "0")
+    body = request.get_json()
+    id = body.get("id", "")
+    #name = body.get("name")
+    #description = body.get("description")
+    #price = body.get("price")
+    stock = body.get("stock")
+    payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+    role = payload.get("role")
+    print("ca passe2")
+    if role == "administrateur" and decode_token(token):
+        print("ca passe3")
+        update_product(Product(id=id, name=name, description=description, price=price, stock=stock))
         return {"message": "Ok !"}, 200
     return {"error": "seul un administrateur a le droit de créer un produit."}, 401
 

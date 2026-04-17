@@ -23,7 +23,7 @@ class Product(db.Model):
     stock = db.Column(db.Integer, default=0)
     
     def __repr__(self):
-        return f'<Product {self.name}>'
+        return 'Product id={0}, name={1}, description={2}, price={3}, stock={4}'.format(self.id, self.name, self.description, self.price, self.stock)
 
 class Cart(db.Model):
     __tablename__ = 'carts'
@@ -127,9 +127,11 @@ def read_specific_product(product_id):
     print(specific_product)
     
 def create_product(product):
+    print("ca passe3")
     if product.__class__.__name__ == 'Product':
         new_product = db.session.query(Product).filter_by(id=product.id).first()
         if new_product is None:
+            print("ca passe4")
             try:
                 new_product = Product(id=product.id, name=product.name, description=product.description, price=product.price, stock=product.stock)
             except ValueError:
