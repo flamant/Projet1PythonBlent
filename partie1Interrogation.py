@@ -50,7 +50,6 @@ json={
     'stock': 30
 })
 print("request status is "+ str(req.status_code))
-print(req.json().get("error"))
 
 print("get list of products.")
 print("---------------------")

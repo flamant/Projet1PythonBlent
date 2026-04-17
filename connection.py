@@ -106,12 +106,10 @@ def createNewProduct():
     stock = body.get("stock")
     payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
     role = payload.get("role")
-    print("ca passe4")
     if role == "administrateur" and decode_token(token):
-        print("ca passe5")
         create_product(Product(id=id, name=name, description=description, price=price, stock=stock))
         return {"message": "Ok !"}, 200
-    return {"error": "seul un administrateur a le droit de créer un produit et ."}, 401
+    return {"error": "seul un administrateur a le droit de créer un produit et l'utilisateur doit être correctement authentifié."}, 401
 
 
 @app.route('/api/produits/<id>', methods=["PUT"])
@@ -130,5 +128,5 @@ def modifyProduct(id):
         print("ca passe3")
         update_product(Product(id=id, name=name, description=description, price=price, stock=stock))
         return {"message": "Ok !"}, 200
-    return {"error": "seul un administrateur a le droit de créer un produit."}, 401
+    return {"error": "seul un administrateur a le droit de créer un produit et l'utilisateur doit être correctement authentifié."}, 401
 

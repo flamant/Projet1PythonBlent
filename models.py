@@ -147,11 +147,14 @@ def create_product(product):
 
 def update_product(product):
     # Récupérer le produit à mettre à jour
-    old_product = db.session.query(Product).filter_by(product.id).first()
+    print("ca passe4")
+    old_product = db.session.query(Product).filter_by(id=product.id).first()
     # Ajouter à la session
     db.session.add(old_product)
     db.session.commit()
+    print("ca passe5")
     if old_product:
+        print("ca passe6")
         # Mettre à jour les attributs
         old_product.name = product.name
         old_product.description = product.description
