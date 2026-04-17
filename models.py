@@ -109,7 +109,6 @@ def read_products():
         print(product)
 
 def get_list_of_users():
-    print("ca passe2")
     # Récupérer tous les utilisateur
     all_users = db.session.query(User).all()
     print("\nTous les utilisateurs:")
@@ -127,11 +126,9 @@ def read_specific_product(product_id):
     print(specific_product)
     
 def create_product(product):
-    print("ca passe3")
     if product.__class__.__name__ == 'Product':
         new_product = db.session.query(Product).filter_by(id=product.id).first()
         if new_product is None:
-            print("ca passe4")
             try:
                 new_product = Product(id=product.id, name=product.name, description=product.description, price=product.price, stock=product.stock)
             except ValueError:
@@ -148,23 +145,30 @@ def create_product(product):
         raise ValueError("Il y a une erreur dans les données envoyée pour créer un nouveau produit.")
 
 
-def update_product(product_id):
+def update_product(product):
     # Récupérer le produit à mettre à jour
-    product = db.session.query(Product).filter_by(id=self._product_id).first()
+    old_product = db.session.query(Product).filter_by(product.id).first()
     # Ajouter à la session
-    db.session.add(product)
+    db.session.add(old_product)
     db.session.commit()
-    if product:
+    if old_product:
         # Mettre à jour les attributs
-        product.price = 39.99
-        product.stock = 25
+        old_product.name = product.name
+        old_product.description = product.description
+        old_product.price = product.price
+        old_product.stock = product.stock
         
         # Commit pour sauvegarder les changements
         db.session.commit()
         print("\nProduit mis à jour:")
-        print(product)
+        print(old_product)
     else:
         print("\nProduit non trouvé!")
+
+
+
+
+
 
 def delete_product(product_id):
     # Récupérer le produit à supprimer

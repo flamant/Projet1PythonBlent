@@ -106,21 +106,22 @@ def createNewProduct():
     stock = body.get("stock")
     payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
     role = payload.get("role")
+    print("ca passe4")
     if role == "administrateur" and decode_token(token):
+        print("ca passe5")
         create_product(Product(id=id, name=name, description=description, price=price, stock=stock))
         return {"message": "Ok !"}, 200
-    return {"error": "seul un administrateur a le droit de créer un produit."}, 401
+    return {"error": "seul un administrateur a le droit de créer un produit et ."}, 401
 
 
-@app.route('/api/produits', methods=["PUT"])
-def modifyProduct():
+@app.route('/api/produits/<id>', methods=["PUT"])
+def modifyProduct(id):
     print("ca passe1")
     token = request.headers.get("token", "0")
     body = request.get_json()
-    id = body.get("id", "")
-    #name = body.get("name")
-    #description = body.get("description")
-    #price = body.get("price")
+    name = body.get("name")
+    description = body.get("description")
+    price = body.get("price")
     stock = body.get("stock")
     payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
     role = payload.get("role")
