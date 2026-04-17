@@ -30,9 +30,12 @@ class Cart(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    user_id = db.Column(db.String(100), db.ForeignKey('users.id'), nullable=False)
     
     # Relation avec les éléments du panier
     items = db.relationship('CartItem', backref='cart', lazy=True, cascade='all, delete-orphan')
+
+    user = db.relationship('User', backref='carts')
     
     def __repr__(self):
         return f'<Cart {self.id}>'

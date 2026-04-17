@@ -142,3 +142,25 @@ def deleteProduct(id):
     return {"error": "seul un administrateur a le droit de créer un produit et l'utilisateur doit être correctement authentifié."}, 401
 
 
+@app.route('/api/commandes', methods=["POST"])
+def createNewCommand():
+    token = request.headers.get("token", "0")
+    body = request.get_json()
+    cart_id = body.get("cart_id", "")
+    cart_items = body.get("cart_items")
+    item = []
+    i=0
+    for cart_item in cart_items:
+        item[i]['cart_item_id'] = cart_item['cart_item_id']
+        item[i]['product_id'] = cart_item['product_id']
+        item[i]['quantity'] = cart_item['quantity']
+        i += 1
+    description = body.get("description")
+    price = body.get("price")
+    stock = body.get("stock")
+    payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+    role = payload.get("role")
+    if role == "administrateur" and decode_token(token):
+        create_product(Product(id=id, name=name, description=description, price=price, stock=stock))
+        return {"message": "Ok !"}, 200
+    return {"error": "seul un administrateur a le droit de créer un produit et l'utilisateur doit être correctement authentifié."}, 401
