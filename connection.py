@@ -1,7 +1,7 @@
 import jwt
 from flask import Flask, request, jsonify
 from datetime import datetime, timedelta
-from models import create_user, authenticate, User, read_products, Product, read_specific_product, get_list_of_users, create_product, update_product
+from models import create_user, authenticate, User, read_products, Product, read_specific_product, get_list_of_users, create_product, update_product, delete_product
 from models import app
 
 
@@ -114,7 +114,6 @@ def createNewProduct():
 
 @app.route('/api/produits/<id>', methods=["PUT"])
 def modifyProduct(id):
-    print("ca passe1")
     token = request.headers.get("token", "0")
     body = request.get_json()
     name = body.get("name")
@@ -123,10 +122,23 @@ def modifyProduct(id):
     stock = body.get("stock")
     payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
     role = payload.get("role")
-    print("ca passe2")
     if role == "administrateur" and decode_token(token):
         print("ca passe3")
         update_product(Product(id=id, name=name, description=description, price=price, stock=stock))
         return {"message": "Ok !"}, 200
     return {"error": "seul un administrateur a le droit de créer un produit et l'utilisateur doit être correctement authentifié."}, 401
+
+@app.route('/api/produits/<id>', methods=["DELETE"])
+def deleteProduct(id):
+    print("ca passe1")
+    token = request.headers.get("token", "0")
+    payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+    role = payload.get("role")
+    print("ca passe2")
+    if role == "administrateur" and decode_token(token):
+        print("ca passe3")
+        delete_product(id)
+        return {"message": "Ok !"}, 200
+    return {"error": "seul un administrateur a le droit de créer un produit et l'utilisateur doit être correctement authentifié."}, 401
+
 

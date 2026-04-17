@@ -147,14 +147,11 @@ def create_product(product):
 
 def update_product(product):
     # Récupérer le produit à mettre à jour
-    print("ca passe4")
     old_product = db.session.query(Product).filter_by(id=product.id).first()
     # Ajouter à la session
     db.session.add(old_product)
     db.session.commit()
-    print("ca passe5")
     if old_product:
-        print("ca passe6")
         # Mettre à jour les attributs
         old_product.name = product.name
         old_product.description = product.description
@@ -174,18 +171,20 @@ def update_product(product):
 
 
 def delete_product(product_id):
+    print("ca passe4")
     # Récupérer le produit à supprimer
-    product = db.session.query(Product).filter_by(id=self._product_id).first()
+    product = db.session.query(Product).filter_by(id=product_id).first()
     # Ajouter à la session
     db.session.add(product)
     db.session.commit()
     if product:
+        print("ca passe5")
         # Supprimer le produit
         db.session.delete(product)
         
         # Commit pour sauvegarder les changements
         db.session.commit()
-        print("\nProduit supprimé!")
+        print("\nProduit avec id=" + product_id + "supprimé!")
     else:
         print("\nProduit non trouvé!")
 

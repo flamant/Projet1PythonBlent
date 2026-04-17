@@ -73,3 +73,13 @@ print("get list of products.")
 print("---------------------")
 req = requests.get("http://127.0.0.1:5000/api/produits", headers={"token": token})
 print("request status is "+ str(req.status_code))
+
+print("delete a product ")
+print("-----------------")
+req = requests.delete("http://127.0.0.1:5000/api/produits/prod004", headers={"token": token})
+print("request status is "+ str(req.status_code))
+
+print("get list of products.")
+print("---------------------")
+req = requests.get("http://127.0.0.1:5000/api/produits", headers={"token": token})
+print("request status is "+ str(req.status_code))
