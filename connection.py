@@ -167,25 +167,12 @@ def createNewCommand():
             i = 0
             while i < number_cart_item:
                 try:
-                    cart_item[i] = db.session.query(Cart).filter_by(id=item[0]['cart_item_id']).one()
-                    return {"error": "This cart_item which id is " + item[0]['cart_item_id'] + " already exists."}, 406 
+                    cart_item[i] = db.session.query(Cart).filter_by(id=item[i]['cart_item_id']).one()
+                    return {"error": "This cart_item which id is " + item[i]['cart_item_id'] + " already exists."}, 406 
                 except NoResultFound:
-                    id_cart_item_max = db.session.query(Cart).filter_by(id=cart_id).one()
-                    create_cart_item(CartItem(id=item[i]['cart_item_id'], cart_id=cart_id, product_id=item[i]['product_id'], quantity=item[i]['quantity']))
+                    if i == 0:
+                        create_cart_when_not_exists(Cart(id=item[i]['cart_item_id'], created_at=datetime.utcnow, user_id=user_id))
+                    create_cart_item_when_not_exists(CartItem(id=item[i]['cart_item_id'], cart_id=cart_id, product_id=item[i]['product_id'], quantity=item[i]['quantity']))
+                i += 1
         else:
             return {"error": "l'utilisateur doit être correctement authentifié."}, 406
-
-    id = db.Column(db.Integer, primary_key=True)
-    cart_id = db.Column(db.Integer, db.ForeignKey('carts.id'), nullable=False)
-    product_id = db.Column(db.String(10), db.ForeignKey('products.id'), nullable=False)
-    quantity = db.Column(db.Integer, default=1)   
-
-    description = body.get("description")
-    price = body.get("price")
-    stock = body.get("stock")
-    payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-    role = payload.get("role")
-    if role == "administrateur" and decode_token(token):
-        create_product(Product(id=id, name=name, description=description, price=price, stock=stock))
-        return {"message": "Ok !"}, 200
-    return {"error": "seul un administrateur a le droit de créer un produit et l'utilisateur doit être correctement authentifié."}, 401
