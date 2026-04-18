@@ -2,6 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask import Flask
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy import func
 
 
 app = Flask(__name__)
@@ -225,6 +226,27 @@ def authenticate(id, password):
 with app.app_context():
     add_sample_products_and_add_admin()
 
+
+
+def create_cart_item(cartItem):
+    if product.__class__.__name__ == 'CartItem':
+        id_cart_item_max = session.query(func.max(CartItem.id)) + 1
+        new_cart_item = CartItem(id=id_cart_item_max, cart_id=cartItem.cart_id, product_id=cartItem.product_id, quantity=cartItem.quantity)
+        if new_product is None:
+            try:
+                new_product = Product(id=product.id, name=product.name, description=product.description, price=product.price, stock=product.stock)
+            except ValueError:
+                raise ValueError("Il y a une erreur dans les données envoyée pour créer un nouveau produit.")
+            if new_product.__class__.__name__ == 'Product':
+                db.session.merge(new_product)
+                db.session.commit()
+                print("Produit créé par un administrateur. ")
+            else:
+                raise ValueError("Il y a une erreur dans les données envoyée pour créer un nouveau produit.")
+        else:
+            raise ValueError("Le produit est déjà créé.")
+    else:
+        raise ValueError("Il y a une erreur dans les données envoyée pour créer un nouveau produit.")
 
 #print("\nProduits après opérations:")
 #for product in session.query(Product).all():

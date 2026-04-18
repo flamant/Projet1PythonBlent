@@ -170,6 +170,7 @@ def createNewCommand():
                     cart_item[i] = db.session.query(Cart).filter_by(id=item[0]['cart_item_id']).one()
                     return {"error": "This cart_item which id is " + item[0]['cart_item_id'] + " already exists."}, 406 
                 except NoResultFound:
+                    id_cart_item_max = db.session.query(Cart).filter_by(id=cart_id).one()
                     create_cart_item(CartItem(id=item[i]['cart_item_id'], cart_id=cart_id, product_id=item[i]['product_id'], quantity=item[i]['quantity']))
         else:
             return {"error": "l'utilisateur doit être correctement authentifié."}, 406
