@@ -178,22 +178,22 @@ def createNewCommand():
     
     return 
     {
-        str(new_cart.id),
-        str(new_cart.user_id),
+        'cart_id': new_cart.id,
+        'user_id': new_cart.user_id,
         'cart_items': [
             {
                 'cart_item_id': new_cart_item[0].id,
-                'product_id': new_cart_item[0].created_at,
+                'product_id': new_cart_item[0].product_id,
                 'quantity': new_cart_item[0].quantity
             },
-             {
+            {
                 'cart_item_id': new_cart_item[1].id,
-                'product_id': new_cart_item[1].created_at,
+                'product_id': new_cart_item[1].product_id,
                 'quantity': new_cart_item[1].quantity
             },
             {
                 'cart_item_id': new_cart_item[2].id,
-                'product_id': new_cart_item[2].created_at,
+                'product_id': new_cart_item[2].product_id,
                 'quantity': new_cart_item[2].quantity
             }           
         ]
