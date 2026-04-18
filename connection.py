@@ -1,7 +1,7 @@
 import jwt
 from flask import Flask, request, jsonify
 from datetime import datetime, timedelta
-from models import create_user, authenticate, User, read_products, Product, read_specific_product, get_list_of_users, create_product, update_product, delete_product
+from models import create_user, authenticate, User, read_products, Product, read_specific_product, get_list_of_users, create_product, update_product, delete_product, create_cart_when_not_exists, create_cart_item_when_not_exists
 from models import app
 
 
@@ -160,7 +160,6 @@ def createNewCommand():
         cart = db.session.query(Cart).filter_by(id=cart_id).one()
         return {"error": "This cart already exists."}, 406 
     except NoResultFound:
-        print("")
         if decode_token(token):
             payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
             user_id = payload.get("user") 
@@ -171,8 +170,31 @@ def createNewCommand():
                     return {"error": "This cart_item which id is " + item[i]['cart_item_id'] + " already exists."}, 406 
                 except NoResultFound:
                     if i == 0:
-                        create_cart_when_not_exists(Cart(id=item[i]['cart_item_id'], created_at=datetime.utcnow, user_id=user_id))
-                    create_cart_item_when_not_exists(CartItem(id=item[i]['cart_item_id'], cart_id=cart_id, product_id=item[i]['product_id'], quantity=item[i]['quantity']))
+                        new_cart = create_cart_when_not_exists(Cart(id=1, created_at=datetime.utcnow, user_id=user_id))
+                    new_cart_item[i] = create_cart_item_when_not_exists(CartItem(id=item[i]['cart_item_id'], cart_id=cart_id, product_id=item[i]['product_id'], quantity=item[i]['quantity']))
                 i += 1
         else:
             return {"error": "l'utilisateur doit être correctement authentifié."}, 406
+    
+    return 
+    {
+        str(new_cart.id),
+        str(new_cart.user_id),
+        'cart_items': [
+            {
+                'cart_item_id': new_cart_item[0].id,
+                'product_id': new_cart_item[0].created_at,
+                'quantity': new_cart_item[0].quantity
+            },
+             {
+                'cart_item_id': new_cart_item[1].id,
+                'product_id': new_cart_item[1].created_at,
+                'quantity': new_cart_item[1].quantity
+            },
+            {
+                'cart_item_id': new_cart_item[2].id,
+                'product_id': new_cart_item[2].created_at,
+                'quantity': new_cart_item[2].quantity
+            }           
+        ]
+    }

@@ -234,6 +234,7 @@ def create_cart_item_when_not_exists(cartItem):
         new_cart_item = CartItem(id=next_id_cart_item_max, cart_id=cartItem.cart_id, product_id=cartItem.product_id, quantity=cartItem.quantity)
         db.session.merge(new_cart_item)
         db.session.commit()
+        return new_cart_item
     else:
         raise ValueError("Il y a une erreur dans les données envoyée pour créer un nouvel item de panier.")
 
@@ -244,6 +245,7 @@ def create_cart_when_not_exists(cart):
         new_cart = Cart(id=next_id_cart_max, created_at=datetime.utcnow, user_id=cart.user_id)
         db.session.merge(new_cart)
         db.session.commit()
+        return new_cart
     else:
         raise ValueError("Il y a une erreur dans les données envoyée pour créer un nouvel item de panier.")
 

@@ -110,4 +110,6 @@ json={
 })
 print("request status is "+ str(req.status_code))
 
+print("request status is "+ str(req.json()))
+
 
