@@ -2,7 +2,9 @@ import jwt
 from flask import Flask, request, jsonify
 from datetime import datetime, timedelta
 from models import create_user, authenticate, User, read_products, Product, read_specific_product, get_list_of_users, create_product, update_product, delete_product, create_cart_when_not_exists, create_cart_item_when_not_exists
-from models import app
+from models import app, Cart, NoResultFound
+from models import db
+import array as arr
 
 
 JWT_SECRET = "d3fb12750c2eff92120742e1b334479e"
@@ -130,13 +132,10 @@ def modifyProduct(id):
 
 @app.route('/api/produits/<id>', methods=["DELETE"])
 def deleteProduct(id):
-    print("ca passe1")
     token = request.headers.get("token", "0")
     payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
     role = payload.get("role")
-    print("ca passe2")
     if role == "administrateur" and decode_token(token):
-        print("ca passe3")
         delete_product(id)
         return {"message": "Ok !"}, 200
     return {"error": "seul un administrateur a le droit de créer un produit et l'utilisateur doit être correctement authentifié."}, 401
@@ -144,31 +143,41 @@ def deleteProduct(id):
 
 @app.route('/api/commandes', methods=["POST"])
 def createNewCommand():
+    print("ca passe1")
     token = request.headers.get("token", "0")
     body = request.get_json()
     cart_id = body.get("cart_id")
     cart_items = body.get("cart_items")
-    item = []
+    n = len(cart_items)
+    item = [dict() for x in range(n)]
     number_cart_item=0
+    print("ca passe2")
     for cart_item in cart_items:
+        print("number_cart_item="+str(number_cart_item))
         item[number_cart_item]['cart_item_id'] = cart_item['cart_item_id']
         item[number_cart_item]['product_id'] = cart_item['product_id']
         item[number_cart_item]['quantity'] = cart_item['quantity']
         number_cart_item += 1
 
+    print("ca passe3")
+    number_cart_item -= 1
+    print(item)
     try:
         cart = db.session.query(Cart).filter_by(id=cart_id).one()
         return {"error": "This cart already exists."}, 406 
     except NoResultFound:
+        print("ca passe4")
         if decode_token(token):
             payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
             user_id = payload.get("user") 
             i = 0
+            print("ca passe5")
             while i < number_cart_item:
                 try:
                     cart_item[i] = db.session.query(Cart).filter_by(id=item[i]['cart_item_id']).one()
                     return {"error": "This cart_item which id is " + item[i]['cart_item_id'] + " already exists."}, 406 
                 except NoResultFound:
+                    print("ca passe6")
                     if i == 0:
                         new_cart = create_cart_when_not_exists(Cart(id=1, created_at=datetime.utcnow, user_id=user_id))
                     new_cart_item[i] = create_cart_item_when_not_exists(CartItem(id=item[i]['cart_item_id'], cart_id=cart_id, product_id=item[i]['product_id'], quantity=item[i]['quantity']))

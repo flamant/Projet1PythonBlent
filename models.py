@@ -229,22 +229,28 @@ with app.app_context():
 
 
 def create_cart_item_when_not_exists(cartItem):
-    if product.__class__.__name__ == 'CartItem':
-        next_id_cart_item_max = session.query(func.max(CartItem.id)) + 1
+    if cartItem.__class__.__name__ == 'CartItem':
+        next_id_cart_item_max = db.session.query(func.max(CartItem.id)) + 1
         new_cart_item = CartItem(id=next_id_cart_item_max, cart_id=cartItem.cart_id, product_id=cartItem.product_id, quantity=cartItem.quantity)
         db.session.merge(new_cart_item)
         db.session.commit()
+        print("ca passe8")
+        print(new_cart_item)
         return new_cart_item
     else:
         raise ValueError("Il y a une erreur dans les données envoyée pour créer un nouvel item de panier.")
 
 
 def create_cart_when_not_exists(cart):
-    if product.__class__.__name__ == 'Cart':
-        next_id_cart_max = session.query(func.max(Cart.id)) + 1
-        new_cart = Cart(id=next_id_cart_max, created_at=datetime.utcnow, user_id=cart.user_id)
+    if cart.__class__.__name__ == 'Cart':
+        cart_id_max = db.session.query(func.max(Cart.id))
+        print(str(cart_id_max) + "max=")
+        next_max_cart_id = cart_id_max +1
+        new_cart = Cart(id=next_max_cart_id, created_at=datetime.utcnow, user_id=cart.user_id)
         db.session.merge(new_cart)
         db.session.commit()
+        print("ca passe7")
+        print(new_cart)
         return new_cart
     else:
         raise ValueError("Il y a une erreur dans les données envoyée pour créer un nouvel item de panier.")
