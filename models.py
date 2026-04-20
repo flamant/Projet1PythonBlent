@@ -1,3 +1,4 @@
+import jwt
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask import Flask
@@ -5,6 +6,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import func
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
+from connection import decode_token
 
 
 app = Flask(__name__)
@@ -46,10 +48,9 @@ class Cart(db.Model):
     def __repr__(self):
         cart_items = db.session.query(cart_items).filter_by(cart_id=id).all()
         cart_items_output = []
-        i = 0
         for cart_item in cart_items:
             cart_items_output.append('Cart Item, id={0}, product_id={1}, quantity={2}'.format(cart_item.id, cart_item.product_id, cart_item.quantity))
-        return 'Cart, id={0}, created_at={1}, user_id={2}'.format(self.id, self.created_at, self.user_id) + '\n' +
+        return 'Cart, id={0}, created_at={1}, user_id={2}'.format(self.id, self.created_at, self.user_id) + '\nCart Item' + ',\n'.join(map(str,cart_items_output))
 
 class CartItem(db.Model):
     __tablename__ = 'cart_items'
@@ -286,15 +287,24 @@ def create_cart_when_not_exists(cart):
 #    print(product)
 
 #session.close()
-def get_list_of_carts():
-    # Récupérer tous les carts
-    all_carts = db.session.query(Cart).all()
-    db.session.add_all(all_carts)
-    db.session.commit()
-    print("\nTous les utilisateurs:")
-    for cart in all_carts:
-        print(cart)   
-
+def get_list_of_carts(token):
+    if decode_token(token):
+        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+        user_id = payload.get("user") 
+        role = payload.get("role") 
+        # Récupérer tous les carts
+        all_carts = db.session.query(Cart).all()
+        if role == 'administrateur':
+            all_carts = db.session.query(Cart).all()
+        else:
+            all_carts = db.session.query(Cart).filter_by(user_id=user_id).all
+        db.session.add_all(all_carts)
+        db.session.commit()
+        print("\nTous les utilisateurs:")
+        for cart in all_carts:
+            print(cart)   
+    else:
+        raise ValueError("L'utilisateur n'est pas correctement authentifié")
 
 def get_list_of_cart_items():
     # Récupérer tous les carts
