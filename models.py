@@ -44,7 +44,12 @@ class Cart(db.Model):
     user = db.relationship('User', backref='carts')
     
     def __repr__(self):
-        return f'<Cart {self.id}>'
+        cart_items = db.session.query(cart_items).filter_by(cart_id=id).all()
+        cart_items_output = []
+        i = 0
+        for cart_item in cart_items:
+            cart_items_output.append('Cart Item, id={0}, product_id={1}, quantity={2}'.format(cart_item.id, cart_item.product_id, cart_item.quantity))
+        return 'Cart, id={0}, created_at={1}, user_id={2}'.format(self.id, self.created_at, self.user_id) + '\n' +
 
 class CartItem(db.Model):
     __tablename__ = 'cart_items'
