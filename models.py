@@ -4,6 +4,7 @@ from flask import Flask
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import func
 from sqlalchemy import create_engine
+from sqlalchemy.sql import text
 
 
 app = Flask(__name__)
@@ -248,23 +249,25 @@ def create_cart_item_when_not_exists(cartItem):
 def create_cart_when_not_exists(cart):
     if cart.__class__.__name__ == 'Cart':
         print("ca passe 6-1")
-        connection = engine.connect()
+        #connection = engine.connect()
         print("ca passe 6-2")
-        cart_id_max = db.session.query(func.max(Cart.id))
+        cart_id_max = db.session.query(func.max(Cart.id)).scalar()
+        if cart_id_max == None:
+            cart_id_max = 0
         print("max=" + str(cart_id_max))
-        result = connection.execute(cart_id_max)
+        #result = connection.execute(cart_id_max)
         print("ca passe 6-3")
         # Fetch the results, if needed
-        for row in result:
-            print("ca passe 6-4")
-            print(row)
+        #for row in result:
+        #    print("ca passe 6-4")
+        #    print(row)
 
         # Close the connection
-        connection.close()
-        
+        #connection.close()
+        currentDateTime = datetime.now()
         print("ca passe 6-5")
         next_max_cart_id = cart_id_max +1
-        new_cart = Cart(id=next_max_cart_id, created_at=datetime.utcnow, user_id=cart.user_id)
+        new_cart = Cart(id=next_max_cart_id, created_at=currentDateTime, user_id=cart.user_id)
         db.session.merge(new_cart)
         db.session.commit()
         print("ca passe7")
@@ -278,3 +281,21 @@ def create_cart_when_not_exists(cart):
 #    print(product)
 
 #session.close()
+def get_list_of_carts():
+    # Récupérer tous les carts
+    all_carts = db.session.query(Cart).all()
+    db.session.add_all(all_carts)
+    db.session.commit()
+    print("\nTous les utilisateurs:")
+    for cart in all_carts:
+        print(cart)   
+
+
+def get_list_of_cart_items():
+    # Récupérer tous les carts
+    all_cart_items = db.session.query(CartItem).all()
+    db.session.add_all(all_cart_items)
+    db.session.commit()
+    print("\nTous les utilisateurs:")
+    for cartItem in all_cart_items:
+        print(cartItem)   
