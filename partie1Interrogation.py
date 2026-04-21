@@ -117,9 +117,9 @@ print("---------------------")
 req = requests.get("http://127.0.0.1:5000/api/commandes", headers={"token": token})
 print("request status is "+ str(req.status_code))
 
-#print("get list of cart items.")
-#print("-----------------------")
-#req = requests.get("http://127.0.0.1:5000/api/cartItems", headers={"token": token})
-#print("request status is "+ str(req.status_code))
+print("get list of cart items.")
+print("-----------------------")
+req = requests.get("http://127.0.0.1:5000/api/commandes/1/lignes", headers={"token": token})
+print("request status is "+ str(req.status_code))
 
 

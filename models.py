@@ -29,7 +29,7 @@ class CartItem(db.Model):
     product = db.relationship('Product', backref='cart_items')
     
     def __repr__(self):
-        return f'<CartItem {self.id}, Product: {self.product_id}, Qty: {self.quantity}>'
+        return f'<CartItem {self.id}, Cart: {self.cart_id} Product: {self.product_id}, Qty: {self.quantity}>'
 
 
 # Définition des modèles
@@ -58,10 +58,14 @@ class Cart(db.Model):
     user = db.relationship('User', backref='carts')
     
     def __repr__(self):
-        cart_items = db.session.query(text('cart_items')).filter_by(cart_id=self.id).all()
+        #cart_items = db.session.query(text('cart_items')).filter_by(cart_id=self.id).all()
         cart_items_output = []
-        for cart_item in cart_items:
-            cart_items_output.append('Cart Item, id={0}, product_id={1}, quantity={2}'.format(cart_item.id, cart_item.product_id, cart_item.quantity))
+        for item in self.items:
+            print(item)
+            cart_items_output.append('Cart Item, id={0}, product_id={1}, quantity={2}'.format(item.id, item.product_id, item.quantity))
+        print("cart_items_output")
+        print(cart_items_output)
+        print(self.items)
         return 'Cart, id={0}, created_at={1}, user_id={2}'.format(self.id, self.created_at, self.user_id) + '\nCart Item' + ',\n'.join(map(str,cart_items_output))
 
 
@@ -296,19 +300,21 @@ def get_list_of_carts(token, JWT_SECRET):
     if role == 'administrateur':
         all_carts = db.session.query(Cart).all()
     else:
-        all_carts = db.session.query(Cart).filter_by(user_id=user_id).all
+        all_carts = db.session.query(Cart).filter_by(user_id=user_id).all()
     db.session.add_all(all_carts)
     db.session.commit()
-    print("\nTous les utilisateurs:")
+    print("\nTous les carts:")
     for cart in all_carts:
         print(cart)   
 
 
-def get_list_of_cart_items():
+def get_list_of_cart_items(id,token, JWT_SECRET):
     # Récupérer tous les carts
-    all_cart_items = db.session.query(CartItem).all()
-    db.session.add_all(all_cart_items)
-    db.session.commit()
-    print("\nTous les utilisateurs:")
+    all_cart_items = db.session.query(CartItem).filter_by(cart_id=id).all()
+    #db.session.add_all(all_cart_items)
+    #db.session.commit()
+    print("\nTous les cart_items:")
+    print("all_cart_items")
+    print(all_cart_items)
     for cartItem in all_cart_items:
         print(cartItem)   
