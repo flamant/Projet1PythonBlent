@@ -2,7 +2,7 @@ import jwt
 from flask import Flask, request, jsonify
 from datetime import datetime, timedelta
 from models import create_user, authenticate, User, read_products, Product, read_specific_product, get_list_of_users, create_product, update_product, delete_product, create_cart_when_not_exists, create_cart_item_when_not_exists
-from models import app, Cart, NoResultFound, CartItem
+from models import app, Cart, NoResultFound, CartItem, get_list_of_carts
 from models import db
 import array as arr
 
@@ -209,9 +209,9 @@ def createNewCommand():
     }
 
 @app.route('/api/commandes', methods=["GET"])
-def getProductList():
+def getCartList():
     token = request.headers.get("token", "0")
     if decode_token(token):
-        read_products()
+        get_list_of_carts(token, JWT_SECRET)
         return {"message": "Ok !"}, 200
     return {"error": "Jeton d'accès invalide."}, 401

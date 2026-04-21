@@ -110,7 +110,7 @@ json={
 })
 print("request status is "+ str(req.status_code))
 
-print("request status is "+ str(req.json()))
+#print("request status is "+ str(req.json()))
 
 print("get list of carts.")
 print("---------------------")

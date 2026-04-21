@@ -6,7 +6,6 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import func
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
-from connection import decode_token
 
 
 app = Flask(__name__)
@@ -18,6 +17,19 @@ engine = create_engine("sqlite:///basic_store.db")
 
 
 
+class CartItem(db.Model):
+    __tablename__ = 'cart_items'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    cart_id = db.Column(db.Integer, db.ForeignKey('carts.id'), nullable=False)
+    product_id = db.Column(db.String(10), db.ForeignKey('products.id'), nullable=False)
+    quantity = db.Column(db.Integer, default=1)
+    
+    # Relation avec le produit
+    product = db.relationship('Product', backref='cart_items')
+    
+    def __repr__(self):
+        return f'<CartItem {self.id}, Product: {self.product_id}, Qty: {self.quantity}>'
 
 
 # Définition des modèles
@@ -46,25 +58,13 @@ class Cart(db.Model):
     user = db.relationship('User', backref='carts')
     
     def __repr__(self):
-        cart_items = db.session.query(cart_items).filter_by(cart_id=id).all()
+        cart_items = db.session.query(text('cart_items')).filter_by(cart_id=self.id).all()
         cart_items_output = []
         for cart_item in cart_items:
             cart_items_output.append('Cart Item, id={0}, product_id={1}, quantity={2}'.format(cart_item.id, cart_item.product_id, cart_item.quantity))
         return 'Cart, id={0}, created_at={1}, user_id={2}'.format(self.id, self.created_at, self.user_id) + '\nCart Item' + ',\n'.join(map(str,cart_items_output))
 
-class CartItem(db.Model):
-    __tablename__ = 'cart_items'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    cart_id = db.Column(db.Integer, db.ForeignKey('carts.id'), nullable=False)
-    product_id = db.Column(db.String(10), db.ForeignKey('products.id'), nullable=False)
-    quantity = db.Column(db.Integer, default=1)
-    
-    # Relation avec le produit
-    product = db.relationship('Product', backref='cart_items')
-    
-    def __repr__(self):
-        return f'<CartItem {self.id}, Product: {self.product_id}, Qty: {self.quantity}>'
+
 
 
 class User(db.Model):
@@ -287,24 +287,22 @@ def create_cart_when_not_exists(cart):
 #    print(product)
 
 #session.close()
-def get_list_of_carts(token):
-    if decode_token(token):
-        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-        user_id = payload.get("user") 
-        role = payload.get("role") 
-        # Récupérer tous les carts
+def get_list_of_carts(token, JWT_SECRET):
+    payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+    user_id = payload.get("user") 
+    role = payload.get("role") 
+    # Récupérer tous les carts
+    all_carts = db.session.query(Cart).all()
+    if role == 'administrateur':
         all_carts = db.session.query(Cart).all()
-        if role == 'administrateur':
-            all_carts = db.session.query(Cart).all()
-        else:
-            all_carts = db.session.query(Cart).filter_by(user_id=user_id).all
-        db.session.add_all(all_carts)
-        db.session.commit()
-        print("\nTous les utilisateurs:")
-        for cart in all_carts:
-            print(cart)   
     else:
-        raise ValueError("L'utilisateur n'est pas correctement authentifié")
+        all_carts = db.session.query(Cart).filter_by(user_id=user_id).all
+    db.session.add_all(all_carts)
+    db.session.commit()
+    print("\nTous les utilisateurs:")
+    for cart in all_carts:
+        print(cart)   
+
 
 def get_list_of_cart_items():
     # Récupérer tous les carts
