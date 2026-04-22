@@ -85,8 +85,8 @@ req = requests.get("http://127.0.0.1:5000/api/produits", headers={"token": token
 print("request status is "+ str(req.status_code))
 
 
-print("create a new command ")
-print("---------------------")
+print("create a new command as administrator")
+print("-------------------------------------")
 req = requests.post("http://127.0.0.1:5000/api/commandes", headers={"token": token},
 json={
     'cart_id': 1,
@@ -122,4 +122,50 @@ print("-----------------------")
 req = requests.get("http://127.0.0.1:5000/api/commandes/1/lignes", headers={"token": token})
 print("request status is "+ str(req.status_code))
 
+print("register (flamant@club-internet.fr, antoine) as client.")
+print("--------------------------------------------------")
+req = requests.post("http://127.0.0.1:5000/api/auth/register", headers={"password": "antoine"}, 
+json={
+    'id': "flamant@club-internet.fr",
+    'statut': 'client',
+    'client': True,
+    'administrator':False
+})
+print("request status is "+ str(req.status_code))
 
+print("connect as (flamant@club-internet.fr,antoine) (client) and generate token.")
+print("---------------------------------------------------------------------")
+req = requests.post("http://127.0.0.1:5000/api/auth/login", headers={"password": "antoine"}, 
+json={
+    'id': "flamant@club-internet.fr",
+    'statut': 'client'
+})
+print("request status is "+ str(req.status_code))
+token_client = req.json().get("token")
+print("token is:"+ token_client)
+
+print("create a new command as client")
+print("------------------------------")
+req = requests.post("http://127.0.0.1:5000/api/commandes", headers={"token": token_client},
+json={
+    'cart_id': 2,
+    'cart_items': [
+        {
+            'cart_item_id': 4,
+            'product_id': 'prod001',
+            'quantity': 5
+        }
+    ]
+})
+print("request status is "+ str(req.status_code))
+
+
+print("get list of carts as client.")
+print("----------------------------")
+req = requests.get("http://127.0.0.1:5000/api/commandes", headers={"token": token_client})
+print("request status is "+ str(req.status_code))
+
+print("get list of carts as administrator.")
+print("-----------------------------------")
+req = requests.get("http://127.0.0.1:5000/api/commandes", headers={"token": token})
+print("request status is "+ str(req.status_code))

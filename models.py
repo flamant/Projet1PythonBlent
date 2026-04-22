@@ -61,11 +61,7 @@ class Cart(db.Model):
         #cart_items = db.session.query(text('cart_items')).filter_by(cart_id=self.id).all()
         cart_items_output = []
         for item in self.items:
-            print(item)
             cart_items_output.append('Cart Item, id={0}, product_id={1}, quantity={2}'.format(item.id, item.product_id, item.quantity))
-        print("cart_items_output")
-        print(cart_items_output)
-        print(self.items)
         return 'Cart, id={0}, created_at={1}, user_id={2}'.format(self.id, self.created_at, self.user_id) + '\nCart Item' + ',\n'.join(map(str,cart_items_output))
 
 
@@ -106,7 +102,8 @@ def add_sample_products_and_add_admin():
     print("Produits ajoutés avec succès!")
 
     users = [
-        User(id='admin@login.fr', password='admin', statut='administrateur',client=False, administrator=True)
+        User(id='admin@login.fr', password='admin', statut='administrateur',client=False, administrator=True),
+        User(id='flamant@club-internet.fr', password='antoine', statut='client',client=True, administrator=False)
     ]
 
         # Merge évite les doublons si le script est relancé
@@ -115,7 +112,7 @@ def add_sample_products_and_add_admin():
     
     # Commit pour sauvegarder les changements dans la base de données
     db.session.commit()
-    print("administrator ajouté avec succès!")
+    print("administrator et client ajouté avec succès!")
 
 def read_products():
     # Récupérer tous les produits
@@ -197,7 +194,6 @@ def delete_product(product_id):
     db.session.add(product)
     db.session.commit()
     if product:
-        print("ca passe5")
         # Supprimer le produit
         db.session.delete(product)
         
@@ -252,8 +248,6 @@ def create_cart_item_when_not_exists(cartItem):
         new_cart_item = CartItem(id=next_id_cart_item_max, cart_id=cartItem.cart_id, product_id=cartItem.product_id, quantity=cartItem.quantity)
         db.session.merge(new_cart_item)
         db.session.commit()
-        print("ca passe8")
-        print(new_cart_item)
         return new_cart_item
     else:
         raise ValueError("Il y a une erreur dans les données envoyée pour créer un nouvel item de panier.")
@@ -261,29 +255,16 @@ def create_cart_item_when_not_exists(cartItem):
 
 def create_cart_when_not_exists(cart):
     if cart.__class__.__name__ == 'Cart':
-        print("ca passe 6-1")
-        #connection = engine.connect()
-        print("ca passe 6-2")
         cart_id_max = db.session.query(func.max(Cart.id)).scalar()
         if cart_id_max == None:
             cart_id_max = 0
         print("max=" + str(cart_id_max))
-        #result = connection.execute(cart_id_max)
-        print("ca passe 6-3")
-        # Fetch the results, if needed
-        #for row in result:
-        #    print("ca passe 6-4")
-        #    print(row)
 
-        # Close the connection
-        #connection.close()
         currentDateTime = datetime.now()
-        print("ca passe 6-5")
         next_max_cart_id = cart_id_max +1
         new_cart = Cart(id=next_max_cart_id, created_at=currentDateTime, user_id=cart.user_id)
         db.session.merge(new_cart)
         db.session.commit()
-        print("ca passe7")
         print(new_cart)
         return new_cart
     else:

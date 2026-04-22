@@ -125,7 +125,6 @@ def modifyProduct(id):
     payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
     role = payload.get("role")
     if role == "administrateur" and decode_token(token):
-        print("ca passe3")
         update_product(Product(id=id, name=name, description=description, price=price, stock=stock))
         return {"message": "Ok !"}, 200
     return {"error": "seul un administrateur a le droit de créer un produit et l'utilisateur doit être correctement authentifié."}, 401
@@ -143,7 +142,6 @@ def deleteProduct(id):
 
 @app.route('/api/commandes', methods=["POST"])
 def createNewCommand():
-    print("ca passe1")
     token = request.headers.get("token", "0")
     if decode_token(token):
         payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
@@ -154,7 +152,6 @@ def createNewCommand():
         n = len(cart_items)
         item = [dict() for x in range(n)]
         number_cart_item=0
-        print("ca passe2")
         for cart_item in cart_items:
             print("number_cart_item="+str(number_cart_item))
             item[number_cart_item]['cart_item_id'] = cart_item['cart_item_id']
@@ -162,21 +159,16 @@ def createNewCommand():
             item[number_cart_item]['quantity'] = cart_item['quantity']
             number_cart_item += 1
 
-        print("ca passe3")
-        print(item)
         try:
             cart = db.session.query(Cart).filter_by(id=cart_id).one()
         except NoResultFound:
-            print("ca passe4")
             cart = create_cart_when_not_exists(Cart(id=1, created_at=datetime.utcnow, user_id=user_id))
 
         i = 0
-        print("ca passe5")
         while i < number_cart_item:
             try:
                 cart_item[i] = db.session.query(CartItem).filter_by(id=item[i]['cart_item_id']).one()
             except NoResultFound:
-                print("ca passe6")
                 cart_item[i] = create_cart_item_when_not_exists(CartItem(id=item[i]['cart_item_id'], cart_id=cart_id, product_id=item[i]['product_id'], quantity=item[i]['quantity']))
             i += 1
         return {
