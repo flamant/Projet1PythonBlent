@@ -245,7 +245,10 @@ with app.app_context():
 
 def create_cart_item_when_not_exists(cartItem):
     if cartItem.__class__.__name__ == 'CartItem':
-        next_id_cart_item_max = db.session.query(func.max(CartItem.id)).scalar() + 1
+        id_cart_item_max = db.session.query(func.max(CartItem.id)).scalar()
+        if id_cart_item_max == None:
+            id_cart_item_max = 0
+        next_id_cart_item_max = id_cart_item_max + 1
         new_cart_item = CartItem(id=next_id_cart_item_max, cart_id=cartItem.cart_id, product_id=cartItem.product_id, quantity=cartItem.quantity)
         db.session.merge(new_cart_item)
         db.session.commit()

@@ -145,68 +145,65 @@ def deleteProduct(id):
 def createNewCommand():
     print("ca passe1")
     token = request.headers.get("token", "0")
-    body = request.get_json()
-    cart_id = body.get("cart_id")
-    cart_items = body.get("cart_items")
-    n = len(cart_items)
-    item = [dict() for x in range(n)]
-    number_cart_item=0
-    print("ca passe2")
-    for cart_item in cart_items:
-        print("number_cart_item="+str(number_cart_item))
-        item[number_cart_item]['cart_item_id'] = cart_item['cart_item_id']
-        item[number_cart_item]['product_id'] = cart_item['product_id']
-        item[number_cart_item]['quantity'] = cart_item['quantity']
-        number_cart_item += 1
-
-    print("ca passe3")
-    number_cart_item -= 1
-    print(item)
-    try:
-        cart = db.session.query(Cart).filter_by(id=cart_id).one()
-    except NoResultFound:
-        print("ca passe4")
-        new_cart = create_cart_when_not_exists(Cart(id=1, created_at=datetime.utcnow, user_id=user_id))
     if decode_token(token):
         payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
         user_id = payload.get("user") 
+        body = request.get_json()
+        cart_id = body.get("cart_id")
+        cart_items = body.get("cart_items")
+        n = len(cart_items)
+        item = [dict() for x in range(n)]
+        number_cart_item=0
+        print("ca passe2")
+        for cart_item in cart_items:
+            print("number_cart_item="+str(number_cart_item))
+            item[number_cart_item]['cart_item_id'] = cart_item['cart_item_id']
+            item[number_cart_item]['product_id'] = cart_item['product_id']
+            item[number_cart_item]['quantity'] = cart_item['quantity']
+            number_cart_item += 1
+
+        print("ca passe3")
+        print(item)
+        try:
+            cart = db.session.query(Cart).filter_by(id=cart_id).one()
+        except NoResultFound:
+            print("ca passe4")
+            cart = create_cart_when_not_exists(Cart(id=1, created_at=datetime.utcnow, user_id=user_id))
+
         i = 0
         print("ca passe5")
         while i < number_cart_item:
             try:
                 cart_item[i] = db.session.query(CartItem).filter_by(id=item[i]['cart_item_id']).one()
-                #return {"error": "This cart_item which id is " + item[i]['cart_item_id'] + " already exists."}, 406 
             except NoResultFound:
                 print("ca passe6")
-                #if i == 0:
-                    #new_cart = create_cart_when_not_exists(Cart(id=1, created_at=datetime.utcnow, user_id=user_id))
-                new_cart_item[i] = create_cart_item_when_not_exists(CartItem(id=item[i]['cart_item_id'], cart_id=cart_id, product_id=item[i]['product_id'], quantity=item[i]['quantity']))
+                cart_item[i] = create_cart_item_when_not_exists(CartItem(id=item[i]['cart_item_id'], cart_id=cart_id, product_id=item[i]['product_id'], quantity=item[i]['quantity']))
             i += 1
+        return {
+                'cart_id': cart.id,
+                'user_id': cart.user_id,
+                'cart_items': [
+                    {
+                        'cart_item_id': cart_item[0].id,
+                        'product_id': cart_item[0].product_id,
+                        'quantity': cart_item[0].quantity
+                    },
+                    {
+                        'cart_item_id': cart_item[1].id,
+                        'product_id': cart_item[1].product_id,
+                        'quantity': cart_item[1].quantity
+                    },
+                    {
+                        'cart_item_id': cart_item[2].id,
+                        'product_id': cart_item[2].product_id,
+                        'quantity': cart_item[2].quantity
+                    }           
+                ]
+               }
     else:
         return {"error": "l'utilisateur doit être correctement authentifié."}, 406
     
-    return 
-    {
-        'cart_id': new_cart.id,
-        'user_id': new_cart.user_id,
-        'cart_items': [
-            {
-                'cart_item_id': new_cart_item[0].id,
-                'product_id': new_cart_item[0].product_id,
-                'quantity': new_cart_item[0].quantity
-            },
-            {
-                'cart_item_id': new_cart_item[1].id,
-                'product_id': new_cart_item[1].product_id,
-                'quantity': new_cart_item[1].quantity
-            },
-            {
-                'cart_item_id': new_cart_item[2].id,
-                'product_id': new_cart_item[2].product_id,
-                'quantity': new_cart_item[2].quantity
-            }           
-        ]
-    }
+    
 
 @app.route('/api/commandes', methods=["GET"])
 def getCartList():
