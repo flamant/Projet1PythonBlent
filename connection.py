@@ -52,15 +52,26 @@ def connection_and_generate_token():
     typeDeCompte = 'le client' if statut == "client" else "l'administrateur"
     password = request.headers.get("password", "0")
     if authenticate(id, password):
-        token = jwt.encode(
+        if statut == 'administrateur':
+            token = jwt.encode(
+                {
+                    "exp": datetime.utcnow() + timedelta(hours=1),
+                    "user": id,
+                    "role": "administrateur"
+                },
+                JWT_SECRET,
+                algorithm="HS256"
+            )
+        else:
+            token = jwt.encode(
             {
                 "exp": datetime.utcnow() + timedelta(hours=1),
                 "user": id,
-                "role": "administrateur"
+                "role": "client"
             },
             JWT_SECRET,
             algorithm="HS256"
-        )
+            )
         data = {"token": token,
         "message": token + "pour " + typeDeCompte + "id=" + id}
         return jsonify(data),200
@@ -179,17 +190,7 @@ def createNewCommand():
                         'cart_item_id': cart_item[0].id,
                         'product_id': cart_item[0].product_id,
                         'quantity': cart_item[0].quantity
-                    },
-                    {
-                        'cart_item_id': cart_item[1].id,
-                        'product_id': cart_item[1].product_id,
-                        'quantity': cart_item[1].quantity
-                    },
-                    {
-                        'cart_item_id': cart_item[2].id,
-                        'product_id': cart_item[2].product_id,
-                        'quantity': cart_item[2].quantity
-                    }           
+                    }        
                 ]
                }
     else:

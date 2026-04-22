@@ -17,7 +17,7 @@ print("---------------------------------------------------------------------")
 req = requests.post("http://127.0.0.1:5000/api/auth/login", headers={"password": "admin"}, 
 json={
     'id': "admin@login.fr",
-    'statut': 'client'
+    'statut': 'administrateur'
 })
 print("request status is "+ str(req.status_code))
 

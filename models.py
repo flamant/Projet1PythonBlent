@@ -281,9 +281,12 @@ def get_list_of_carts(token, JWT_SECRET):
     role = payload.get("role") 
     # Récupérer tous les carts
     all_carts = db.session.query(Cart).all()
+    print("role="+str(role))
     if role == 'administrateur':
+        print("role administrateur")
         all_carts = db.session.query(Cart).all()
     else:
+        print("role client"+str(user_id))
         all_carts = db.session.query(Cart).filter_by(user_id=user_id).all()
     db.session.add_all(all_carts)
     db.session.commit()
