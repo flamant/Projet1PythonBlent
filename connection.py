@@ -164,26 +164,26 @@ def createNewCommand():
     print(item)
     try:
         cart = db.session.query(Cart).filter_by(id=cart_id).one()
-        return {"error": "This cart already exists."}, 406 
     except NoResultFound:
         print("ca passe4")
-        if decode_token(token):
-            payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-            user_id = payload.get("user") 
-            i = 0
-            print("ca passe5")
-            while i < number_cart_item:
-                try:
-                    cart_item[i] = db.session.query(Cart).filter_by(id=item[i]['cart_item_id']).one()
-                    return {"error": "This cart_item which id is " + item[i]['cart_item_id'] + " already exists."}, 406 
-                except NoResultFound:
-                    print("ca passe6")
-                    if i == 0:
-                        new_cart = create_cart_when_not_exists(Cart(id=1, created_at=datetime.utcnow, user_id=user_id))
-                    new_cart_item[i] = create_cart_item_when_not_exists(CartItem(id=item[i]['cart_item_id'], cart_id=cart_id, product_id=item[i]['product_id'], quantity=item[i]['quantity']))
-                i += 1
-        else:
-            return {"error": "l'utilisateur doit être correctement authentifié."}, 406
+        new_cart = create_cart_when_not_exists(Cart(id=1, created_at=datetime.utcnow, user_id=user_id))
+    if decode_token(token):
+        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+        user_id = payload.get("user") 
+        i = 0
+        print("ca passe5")
+        while i < number_cart_item:
+            try:
+                cart_item[i] = db.session.query(CartItem).filter_by(id=item[i]['cart_item_id']).one()
+                #return {"error": "This cart_item which id is " + item[i]['cart_item_id'] + " already exists."}, 406 
+            except NoResultFound:
+                print("ca passe6")
+                #if i == 0:
+                    #new_cart = create_cart_when_not_exists(Cart(id=1, created_at=datetime.utcnow, user_id=user_id))
+                new_cart_item[i] = create_cart_item_when_not_exists(CartItem(id=item[i]['cart_item_id'], cart_id=cart_id, product_id=item[i]['product_id'], quantity=item[i]['quantity']))
+            i += 1
+    else:
+        return {"error": "l'utilisateur doit être correctement authentifié."}, 406
     
     return 
     {
