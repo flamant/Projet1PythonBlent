@@ -110,6 +110,11 @@ json={
 })
 print("request status is "+ str(req.status_code))
 
+print("get list of products.")
+print("---------------------")
+req = requests.get("http://127.0.0.1:5000/api/produits", headers={"token": token})
+print("request status is "+ str(req.status_code))
+
 #print("request status is "+ str(req.json()))
 
 print("get list of carts.")

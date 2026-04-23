@@ -178,28 +178,28 @@ def createNewCommand():
         i = 0
         while i < number_cart_item:
             try:
-                cart_item[i] = db.session.query(CartItem).filter_by(id=item[i]['cart_item_id']).one()
+                item[i] = db.session.query(CartItem).filter_by(id=item[i]['cart_item_id']).one()
             except NoResultFound:
-                cart_item[i] = create_cart_item_when_not_exists(CartItem(id=item[i]['cart_item_id'], cart_id=cart_id, product_id=item[i]['product_id'], quantity=item[i]['quantity']))
+                item[i] = create_cart_item_when_not_exists(CartItem(id=item[i]['cart_item_id'], cart_id=cart_id, product_id=item[i]['product_id'], quantity=item[i]['quantity']))
             i += 1
         return {
                 'cart_id': cart.id,
                 'user_id': cart.user_id,
                 'cart_items': [
                     {
-                        'cart_item_id': cart_item[0].id,
-                        'product_id': cart_item[0].product_id,
-                        'quantity': cart_item[0].quantity
+                        'cart_item_id': item[0].id,
+                        'product_id': item[0].product_id,
+                        'quantity': item[0].quantity
                     },  
                     {
-                        'cart_item_id': cart_item[1].id,
-                        'product_id': cart_item[1].product_id,
-                        'quantity': cart_item[1].quantity
+                        'cart_item_id': item[1].id,
+                        'product_id': item[1].product_id,
+                        'quantity': item[1].quantity
                     },
                     {
-                        'cart_item_id': cart_item[2].id,
-                        'product_id': cart_item[2].product_id,
-                        'quantity': cart_item[2].quantity
+                        'cart_item_id': item[2].id,
+                        'product_id': item[2].product_id,
+                        'quantity': item[2].quantity
                     },      
                 ],
                 'comments' : {
