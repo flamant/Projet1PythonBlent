@@ -175,3 +175,16 @@ print("Récupérer une commande spécifique (GET /api/commandes/{id}) (client or
 print("-------------------------------------------------------------------------------------")
 req = requests.get("http://127.0.0.1:5000/api/commandes/1", headers={"token": token})
 print("request status is "+ str(req.status_code))
+
+
+print("Modifier le statut d'une commande (PATCH /api/commandes/{id}) - Admin uniquement")
+req = requests.patch("http://127.0.0.1:5000/api/commandes/1", headers={"token": token},
+json={
+    'cart_id': 2,
+    'cart_items': [
+        {
+            'cart_item_id': 4,
+            'product_id': 'prod001',
+            'quantity': 5
+        }]})
+print("request status is "+ str(req.status_code))

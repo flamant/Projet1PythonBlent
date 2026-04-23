@@ -240,15 +240,33 @@ with app.app_context():
 
 
 def create_cart_item_when_not_exists(cartItem):
+    output_information = []
     if cartItem.__class__.__name__ == 'CartItem':
         id_cart_item_max = db.session.query(func.max(CartItem.id)).scalar()
         if id_cart_item_max == None:
             id_cart_item_max = 0
         next_id_cart_item_max = id_cart_item_max + 1
+        #----------------------------------------------------#
+        print("verifier si le stock du produit est suffisant")
+        product_in_data_base
+        try:
+            product_in_data_base = db.session.query(Product).filter_by(id=CartItem.product_id).one()    
+        except NoResultFound: 
+            raise ValueError("Il n'y a pas de produit correspondant à l'identifiant "+str(cartItem.product_id))
+        old_stock = product_in_data_base.stock
+        if cartItem.quantity > old_stock:
+            cartItem.quantity = old_stock
+            old_stock = 0
+            output_information.append("le produit d'identifiant "+str(CartItem.product_id) + " n'est pas en quantité suffisante. On ne pourra commander que ce qu'il y a en stock, c'est à dire "+str(old_stock))
+        else:
+            old_stock = old_stock - cartItem.quantity
+            output_information.append("le produit d'identifiant "+str(CartItem.product_id) + " est en quantité suffisante. Il ne restera en stock, que "+str(old_stock))
+        db.session.merge(product_in_data_base)
+        db.session.commit()
         new_cart_item = CartItem(id=next_id_cart_item_max, cart_id=cartItem.cart_id, product_id=cartItem.product_id, quantity=cartItem.quantity)
         db.session.merge(new_cart_item)
         db.session.commit()
-        return new_cart_item
+        return output_information
     else:
         raise ValueError("Il y a une erreur dans les données envoyée pour créer un nouvel item de panier.")
 
