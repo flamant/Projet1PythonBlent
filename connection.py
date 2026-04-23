@@ -3,7 +3,7 @@ from flask import Flask, request, jsonify
 from datetime import datetime, timedelta
 from models import create_user, authenticate, User, read_products, Product, read_specific_product, get_list_of_users, create_product, update_product, delete_product, create_cart_when_not_exists, create_cart_item_when_not_exists
 from models import app, Cart, NoResultFound, CartItem, get_list_of_carts, get_list_of_cart_items
-from models import db
+from models import db, get_specific_cart
 import array as arr
 
 
@@ -203,6 +203,16 @@ def getCartList():
     token = request.headers.get("token", "0")
     if decode_token(token):
         get_list_of_carts(token, JWT_SECRET)
+        return {"message": "Ok !"}, 200
+    return {"error": "Jeton d'accès invalide."}, 401
+
+print("Récupérer une commande spécifique (GET /api/commandes/{id}) (client or administrator)")
+print("-------------------------------------------------------------------------------------")
+@app.route('/api/commandes/<id>', methods=["GET"])
+def getSpecificCommand(id):
+    token = request.headers.get("token", "0")
+    if decode_token(token):
+        get_specific_cart(id)
         return {"message": "Ok !"}, 200
     return {"error": "Jeton d'accès invalide."}, 401
 

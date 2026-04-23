@@ -24,8 +24,8 @@ print("request status is "+ str(req.status_code))
 token = req.json().get("token")
 print("token is:"+ token)
 
-print("get list of users.")
-print("------------------")
+print("get list of users interrogé par un administrateur.")
+print("--------------------------------------------------")
 req = requests.get("http://127.0.0.1:5000/api/users", headers={"token": token})
 print("request status is "+ str(req.status_code))
 
@@ -168,4 +168,10 @@ print("request status is "+ str(req.status_code))
 print("get list of carts as administrator.")
 print("-----------------------------------")
 req = requests.get("http://127.0.0.1:5000/api/commandes", headers={"token": token})
+print("request status is "+ str(req.status_code))
+
+
+print("Récupérer une commande spécifique (GET /api/commandes/{id}) (client or administrator)")
+print("-------------------------------------------------------------------------------------")
+req = requests.get("http://127.0.0.1:5000/api/commandes/1)", headers={"token": token})
 print("request status is "+ str(req.status_code))

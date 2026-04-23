@@ -284,15 +284,25 @@ def get_list_of_carts(token, JWT_SECRET):
     print("role="+str(role))
     if role == 'administrateur':
         print("role administrateur")
+        print("\nTous les carts interrogé par un administrateur:")
         all_carts = db.session.query(Cart).all()
     else:
         print("role client"+str(user_id))
+        print("\nTous les carts interrogé par un client:")
         all_carts = db.session.query(Cart).filter_by(user_id=user_id).all()
     db.session.add_all(all_carts)
     db.session.commit()
-    print("\nTous les carts:")
+    
     for cart in all_carts:
         print(cart)   
+
+
+def get_specific_cart(id):
+    # Récupérer un cart specifique
+    cart = db.session.query(Cart).filter_by(id=id).one()
+    db.session.add(cart)
+    db.session.commit()
+    print(cart)           
 
 
 def get_list_of_cart_items(id,token, JWT_SECRET):
