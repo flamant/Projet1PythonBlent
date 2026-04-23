@@ -15,7 +15,7 @@ db = SQLAlchemy(app)
 
 engine = create_engine("sqlite:///basic_store.db")
 
-
+output_information = []
 
 class CartItem(db.Model):
     __tablename__ = 'cart_items'
@@ -240,7 +240,6 @@ with app.app_context():
 
 
 def create_cart_item_when_not_exists(cartItem):
-    output_information = []
     if cartItem.__class__.__name__ == 'CartItem':
         id_cart_item_max = db.session.query(func.max(CartItem.id)).scalar()
         if id_cart_item_max == None:
@@ -266,7 +265,7 @@ def create_cart_item_when_not_exists(cartItem):
         new_cart_item = CartItem(id=next_id_cart_item_max, cart_id=cartItem.cart_id, product_id=cartItem.product_id, quantity=cartItem.quantity)
         db.session.merge(new_cart_item)
         db.session.commit()
-        return output_information
+        return new_cart_item
     else:
         raise ValueError("Il y a une erreur dans les données envoyée pour créer un nouvel item de panier.")
 

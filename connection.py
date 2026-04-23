@@ -3,7 +3,7 @@ from flask import Flask, request, jsonify
 from datetime import datetime, timedelta
 from models import create_user, authenticate, User, read_products, Product, read_specific_product, get_list_of_users, create_product, update_product, delete_product, create_cart_when_not_exists, create_cart_item_when_not_exists
 from models import app, Cart, NoResultFound, CartItem, get_list_of_carts, get_list_of_cart_items
-from models import db, get_specific_cart
+from models import db, get_specific_cart, output_information
 import array as arr
 
 
@@ -190,8 +190,21 @@ def createNewCommand():
                         'cart_item_id': cart_item[0].id,
                         'product_id': cart_item[0].product_id,
                         'quantity': cart_item[0].quantity
-                    }        
-                ]
+                    },  
+                    {
+                        'cart_item_id': cart_item[1].id,
+                        'product_id': cart_item[1].product_id,
+                        'quantity': cart_item[1].quantity
+                    },
+                    {
+                        'cart_item_id': cart_item[2].id,
+                        'product_id': cart_item[2].product_id,
+                        'quantity': cart_item[2].quantity
+                    },      
+                ],
+                'comments' : {
+                    ',\n'.join(map(str,output_information))
+                }
                }
     else:
         return {"error": "l'utilisateur doit être correctement authentifié."}, 406
