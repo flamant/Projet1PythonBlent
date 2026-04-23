@@ -191,9 +191,7 @@ def createNewCommand():
                 'cart_id': cart.id,
                 'user_id': cart.user_id,
                 'cart_items': print(a),
-                'comments' : {
-                    ',\n'.join(map(str,output_information))
-                }
+                'comments' : ',\n'.join(map(str,output_information))
                }
     else:
         return {"error": "l'utilisateur doit être correctement authentifié."}, 406
