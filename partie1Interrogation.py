@@ -173,5 +173,5 @@ print("request status is "+ str(req.status_code))
 
 print("Récupérer une commande spécifique (GET /api/commandes/{id}) (client or administrator)")
 print("-------------------------------------------------------------------------------------")
-req = requests.get("http://127.0.0.1:5000/api/commandes/1)", headers={"token": token})
+req = requests.get("http://127.0.0.1:5000/api/commandes/1", headers={"token": token})
 print("request status is "+ str(req.status_code))
