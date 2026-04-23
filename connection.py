@@ -182,26 +182,15 @@ def createNewCommand():
             except NoResultFound:
                 item[i] = create_cart_item_when_not_exists(CartItem(id=item[i]['cart_item_id'], cart_id=cart_id, product_id=item[i]['product_id'], quantity=item[i]['quantity']))
             i += 1
+            
+        a = []      
+        for i in range(len(item)):
+            a.append({"cart_item_id": item[i].id, "product_id" : item[i].product_id, "quantity": item[i].quantity})
+
         return {
                 'cart_id': cart.id,
                 'user_id': cart.user_id,
-                'cart_items': [
-                    {
-                        'cart_item_id': item[0].id,
-                        'product_id': item[0].product_id,
-                        'quantity': item[0].quantity
-                    },  
-                    {
-                        'cart_item_id': item[1].id,
-                        'product_id': item[1].product_id,
-                        'quantity': item[1].quantity
-                    },
-                    {
-                        'cart_item_id': item[2].id,
-                        'product_id': item[2].product_id,
-                        'quantity': item[2].quantity
-                    },      
-                ],
+                'cart_items': print(a),
                 'comments' : {
                     ',\n'.join(map(str,output_information))
                 }
