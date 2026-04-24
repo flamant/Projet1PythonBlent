@@ -1,5 +1,5 @@
 import requests
-
+import settings
 #print("register (admin@login.fr, admin) as administrator.")
 #print("--------------------------------------------------")
 #req = requests.post("http://127.0.0.1:5000/api/auth/register", headers={"password": "admin"}, 
@@ -109,6 +109,7 @@ json={
     ]
 })
 print("request status is "+ str(req.status_code))
+settings.init() 
 #print("json response")
 #print(req.json())
 
@@ -165,6 +166,7 @@ json={
     ]
 })
 print("request status is "+ str(req.status_code))
+settings.init() 
 #print("json response")
 #print(req.json())
 

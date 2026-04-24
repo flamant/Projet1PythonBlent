@@ -267,10 +267,10 @@ def create_cart_item_when_not_exists(cartItem):
         if cartItem.quantity > old_stock:
             cartItem.quantity = old_stock
             old_stock = 0
-            settings.output_information.append("le produit d'identifiant "+str(CartItem.product_id) + " n'est pas en quantité suffisante. On ne pourra commander que ce qu'il y a en stock, c'est à dire "+str(old_stock))
+            settings.output_information.append("le produit d'identifiant "+str(cartItem.product_id) + " n'est pas en quantité suffisante. On ne pourra commander que ce qu'il y a en stock, c'est à dire "+str(old_stock))
         else:
             old_stock = old_stock - cartItem.quantity
-            settings.output_information.append("le produit d'identifiant "+str(CartItem.product_id) + " est en quantité suffisante. Il ne restera en stock, que "+str(old_stock))
+            settings.output_information.append("le produit d'identifiant "+str(cartItem.product_id) + " est en quantité suffisante. Il ne restera en stock, que "+str(old_stock))
         product_in_data_base.stock = old_stock
         db.session.merge(product_in_data_base)
         db.session.commit()

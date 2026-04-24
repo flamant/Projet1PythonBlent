@@ -235,6 +235,6 @@ def getSpecificCommand(id):
 def getLigneDeCommande(id):
     token = request.headers.get("token", "0")
     if decode_token(token):
-        get_list_of_cart_items(id,token, JWT_SECRET)
+        get_list_of_cart_items(id)
         return {"message": "Ok !"}, 200
     return {"error": "Jeton d'accès invalide."}, 401
