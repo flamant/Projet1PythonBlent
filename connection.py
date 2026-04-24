@@ -3,8 +3,11 @@ from flask import Flask, request, jsonify
 from datetime import datetime, timedelta
 from models import create_user, authenticate, User, read_products, Product, read_specific_product, get_list_of_users, create_product, update_product, delete_product, create_cart_when_not_exists, create_cart_item_when_not_exists
 from models import app, Cart, NoResultFound, CartItem, get_list_of_carts, get_list_of_cart_items
-from models import db, get_specific_cart, output_information
+from models import db, get_specific_cart
 import array as arr
+import settings
+
+settings.init() 
 
 
 JWT_SECRET = "d3fb12750c2eff92120742e1b334479e"
@@ -187,15 +190,22 @@ def createNewCommand():
                 print(item[i])
             i += 1
             
-        a = []      
+        a = []  
+        print("range(len(item))") 
+        print(range(len(item)))    
         for i in range(len(item)):
+            print("i") 
+            print(i)
             a.append({"cart_item_id": item[i].id, "product_id" : item[i].product_id, "quantity": item[i].quantity})
+            print("a") 
+            print(a)
 
+        print(settings.output_information)
         return {
                 'cart_id': cart.id,
                 'user_id': cart.user_id,
-                'cart_items': print(a),
-                'comments' : ',\n'.join(map(str,output_information))
+                'cart_items': a,
+                'comments' : ',\n'.join(map(str,settings.output_information))
                }
     else:
         return {"error": "l'utilisateur doit être correctement authentifié."}, 406
