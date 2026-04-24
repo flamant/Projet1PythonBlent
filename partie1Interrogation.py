@@ -1,15 +1,15 @@
 import requests
 
-print("register (admin@login.fr, admin) as administrator.")
-print("--------------------------------------------------")
-req = requests.post("http://127.0.0.1:5000/api/auth/register", headers={"password": "admin"}, 
-json={
-    'id': "admin@login.fr",
-    'statut': 'client',
-    'client': False,
-    'administrator':True
-})
-print("request status is "+ str(req.status_code))
+#print("register (admin@login.fr, admin) as administrator.")
+#print("--------------------------------------------------")
+#req = requests.post("http://127.0.0.1:5000/api/auth/register", headers={"password": "admin"}, 
+#json={
+#    'id': "admin@login.fr",
+#    'statut': 'client',
+#    'client': False,
+#    'administrator':True
+#})
+#print("request status is "+ str(req.status_code))
 
 
 print("connect as (admin@login.fr,admin) (administrator) and generate token.")
@@ -127,16 +127,16 @@ print("-----------------------")
 req = requests.get("http://127.0.0.1:5000/api/commandes/1/lignes", headers={"token": token})
 print("request status is "+ str(req.status_code))
 
-print("register (flamant@club-internet.fr, antoine) as client.")
-print("--------------------------------------------------")
-req = requests.post("http://127.0.0.1:5000/api/auth/register", headers={"password": "antoine"}, 
-json={
-    'id': "flamant@club-internet.fr",
-    'statut': 'client',
-    'client': True,
-    'administrator':False
-})
-print("request status is "+ str(req.status_code))
+#print("register (flamant@club-internet.fr, antoine) as client.")
+#print("--------------------------------------------------")
+#req = requests.post("http://127.0.0.1:5000/api/auth/register", headers={"password": "antoine"}, 
+#json={
+#    'id': "flamant@club-internet.fr",
+#    'statut': 'client',
+#    'client': True,
+#    'administrator':False
+#})
+#print("request status is "+ str(req.status_code))
 
 print("connect as (flamant@club-internet.fr,antoine) (client) and generate token.")
 print("---------------------------------------------------------------------")
@@ -163,6 +163,8 @@ json={
     ]
 })
 print("request status is "+ str(req.status_code))
+print("json response")
+print(str(req.json()))
 
 
 print("get list of carts as client.")

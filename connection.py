@@ -178,9 +178,13 @@ def createNewCommand():
         i = 0
         while i < number_cart_item:
             try:
+                print("item[i]['cart_item_id']="+str(item[i]['cart_item_id']))
                 item[i] = db.session.query(CartItem).filter_by(id=item[i]['cart_item_id']).one()
+                print(item[i])
             except NoResultFound:
+                print("item[i]['cart_item_id']="+str(item[i]['cart_item_id'])+",  cart_id="+str(cart_id)+",  product_id="+str(item[i]['product_id'])+",  quantity="+str(item[i]['quantity']))
                 item[i] = create_cart_item_when_not_exists(CartItem(id=item[i]['cart_item_id'], cart_id=cart_id, product_id=item[i]['product_id'], quantity=item[i]['quantity']))
+                print(item[i])
             i += 1
             
         a = []      

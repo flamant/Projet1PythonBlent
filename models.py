@@ -240,6 +240,7 @@ with app.app_context():
 
 
 def create_cart_item_when_not_exists(cartItem):
+    print("create_cart_item_when_not_exists")
     if cartItem.__class__.__name__ == 'CartItem':
         id_cart_item_max = db.session.query(func.max(CartItem.id)).scalar()
         if id_cart_item_max == None:
@@ -247,12 +248,17 @@ def create_cart_item_when_not_exists(cartItem):
         next_id_cart_item_max = id_cart_item_max + 1
         #----------------------------------------------------#
         print("verifier si le stock du produit est suffisant")
-        product_in_data_base
+        print("CartItem.product_id="+str(cartItem.product_id))
+        product_in_data_base = db.session.query(Product).filter_by(id=cartItem.product_id).one()    
+        print(product_in_data_base)
         try:
-            product_in_data_base = db.session.query(Product).filter_by(id=CartItem.product_id).one()    
+            product_in_data_base = db.session.query(Product).filter_by(id=cartItem.product_id).one()    
         except NoResultFound: 
+            print("no result found")
             raise ValueError("Il n'y a pas de produit correspondant à l'identifiant "+str(cartItem.product_id))
         old_stock = product_in_data_base.stock
+        print("old_stock="+str(old_stock))
+        print("cartItem.quantity="+str(cartItem.quantity))
         if cartItem.quantity > old_stock:
             cartItem.quantity = old_stock
             old_stock = 0
@@ -260,11 +266,16 @@ def create_cart_item_when_not_exists(cartItem):
         else:
             old_stock = old_stock - cartItem.quantity
             output_information.append("le produit d'identifiant "+str(CartItem.product_id) + " est en quantité suffisante. Il ne restera en stock, que "+str(old_stock))
+        product_in_data_base.stock = old_stock
         db.session.merge(product_in_data_base)
         db.session.commit()
+        print("product_in_data_base")
+        print(product_in_data_base)
         new_cart_item = CartItem(id=next_id_cart_item_max, cart_id=cartItem.cart_id, product_id=cartItem.product_id, quantity=cartItem.quantity)
         db.session.merge(new_cart_item)
         db.session.commit()
+        print("new_cart_item")
+        print(new_cart_item)
         return new_cart_item
     else:
         raise ValueError("Il y a une erreur dans les données envoyée pour créer un nouvel item de panier.")
