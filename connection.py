@@ -176,7 +176,7 @@ def createNewCommand():
         try:
             cart = db.session.query(Cart).filter_by(id=cart_id).one()
         except NoResultFound:
-            cart = create_cart_when_not_exists(Cart(id=1, created_at=datetime.utcnow, user_id=user_id))
+            cart = create_cart_when_not_exists(Cart(id=1, created_at=datetime.utcnow, user_id=user_id, status='processing'))
 
         i = 0
         while i < number_cart_item:

@@ -109,8 +109,8 @@ json={
     ]
 })
 print("request status is "+ str(req.status_code))
-print("json response")
-print(req.json())
+#print("json response")
+#print(req.json())
 
 print("get list of products.")
 print("---------------------")
@@ -165,8 +165,8 @@ json={
     ]
 })
 print("request status is "+ str(req.status_code))
-print("json response")
-print(req.json())
+#print("json response")
+#print(req.json())
 
 
 print("get list of carts as client.")

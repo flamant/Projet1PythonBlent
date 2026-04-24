@@ -50,7 +50,9 @@ class Cart(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    status = db.Column(db.String(15), default='processing')
     user_id = db.Column(db.String(100), db.ForeignKey('users.id'), nullable=False)
+    
     
     # Relation avec les éléments du panier
     items = db.relationship('CartItem', backref='cart', lazy=True, cascade='all, delete-orphan')
@@ -62,10 +64,10 @@ class Cart(db.Model):
         cart_items_output = []
         for item in self.items:
             cart_items_output.append('Cart Item, id={0}, product_id={1}, quantity={2}'.format(item.id, item.product_id, item.quantity))
-        return 'Cart, id={0}, created_at={1}, user_id={2}'.format(self.id, self.created_at, self.user_id) + '\nCart Item' + ',\n'.join(map(str,cart_items_output))
+        return 'Cart, id={0}, created_at={1}, user_id={2}, status={3}'.format(self.id, self.created_at, self.user_id, self.status) + '\nCart Item' + ',\n'.join(map(str,cart_items_output))
 
 
-
+#Cart.__table__.drop(engine)
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -81,11 +83,14 @@ class User(db.Model):
     def __repr__(self):
         return 'id={0}, password={1}, statut={2}, client={3}, administrator={4}'.format(self.id, self.password, self.statut, self.client, self.administrator)
 
+
+
+
 with app.app_context():
     db.create_all()  # crée les tables
 
 
-def add_sample_products_and_add_admin():
+def add_sample_products_and_add_admin_and_client():
     # Créer quelques produits
     products = [
         Product(id='prod001', name='Azus TUF F15', description='PC Portable Gamer', price=899, stock=10),
@@ -235,7 +240,7 @@ def authenticate(id, password):
         return False
 
 with app.app_context():
-    add_sample_products_and_add_admin()
+    add_sample_products_and_add_admin_and_client()
 
 
 
@@ -290,7 +295,7 @@ def create_cart_when_not_exists(cart):
 
         currentDateTime = datetime.now()
         next_max_cart_id = cart_id_max +1
-        new_cart = Cart(id=next_max_cart_id, created_at=currentDateTime, user_id=cart.user_id)
+        new_cart = Cart(id=next_max_cart_id, created_at=currentDateTime, user_id=cart.user_id, status='processing')
         db.session.merge(new_cart)
         db.session.commit()
         print(new_cart)
@@ -327,14 +332,14 @@ def get_list_of_carts(token, JWT_SECRET):
 
 def get_specific_cart(id):
     # Récupérer un cart specifique
-    print("\impression du cart d'id"+str(id))
+    print("impression du cart d'id"+str(id))
     cart = db.session.query(Cart).filter_by(id=int(id)).one()
     db.session.add(cart)
     db.session.commit()
     print(cart)           
 
 
-def get_list_of_cart_items(id,token, JWT_SECRET):
+def get_list_of_cart_items(id):
     # Récupérer tous les carts
     all_cart_items = db.session.query(CartItem).filter_by(cart_id=id).all()
     #db.session.add_all(all_cart_items)
