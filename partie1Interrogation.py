@@ -1,5 +1,9 @@
 import requests
 import settings
+
+print("Inscription d'un nouvel utilisateur (POST /api/auth/register).")
+print("--------------------------------------------------------------")
+
 #print("register (admin@login.fr, admin) as administrator.")
 #print("--------------------------------------------------")
 #req = requests.post("http://127.0.0.1:5000/api/auth/register", headers={"password": "admin"}, 
@@ -11,7 +15,7 @@ import settings
 #})
 #print("request status is "+ str(req.status_code))
 
-
+print("Connexion et génération de token JWT (POST /api/auth/login).")
 print("connect as (admin@login.fr,admin) (administrator) and generate token.")
 print("---------------------------------------------------------------------")
 req = requests.post("http://127.0.0.1:5000/api/auth/login", headers={"password": "admin"}, 
@@ -34,11 +38,15 @@ print("---------------------")
 req = requests.get("http://127.0.0.1:5000/api/produits", headers={"token": token})
 print("request status is "+ str(req.status_code))
 
+
+print("Récupérer un produit spécifique (GET /api/produits/{id})")
 print("get product prod001")
 print("---------------------")
 req = requests.get("http://127.0.0.1:5000/api/produits/prod001", headers={"token": token})
 print("request status is "+ str(req.status_code))
 
+
+print("Créer un nouveau produit (POST /api/produits) - Admin uniquement")
 print("create a new product ")
 print("---------------------")
 req = requests.post("http://127.0.0.1:5000/api/produits", headers={"token": token},
@@ -57,6 +65,7 @@ req = requests.get("http://127.0.0.1:5000/api/produits", headers={"token": token
 print("request status is "+ str(req.status_code))
 
 
+print("Modifier un produit existant (PUT /api/produits/{id}) - Admin uniquement")
 print("modify a product ")
 print("-----------------")
 req = requests.put("http://127.0.0.1:5000/api/produits/prod004", headers={"token": token},
@@ -74,6 +83,8 @@ print("---------------------")
 req = requests.get("http://127.0.0.1:5000/api/produits", headers={"token": token})
 print("request status is "+ str(req.status_code))
 
+
+print("Supprimer un produit (DELETE /api/produits/{id}) - Admin uniquement")
 print("delete a product ")
 print("-----------------")
 req = requests.delete("http://127.0.0.1:5000/api/produits/prod004", headers={"token": token})
@@ -85,6 +96,7 @@ req = requests.get("http://127.0.0.1:5000/api/produits", headers={"token": token
 print("request status is "+ str(req.status_code))
 
 
+print("Créer une nouvelle commande (POST /api/commandes) - Admin uniquement")
 print("create a new command as administrator")
 print("-------------------------------------")
 req = requests.post("http://127.0.0.1:5000/api/commandes", headers={"token": token},
@@ -113,6 +125,8 @@ settings.init()
 #print("json response")
 #print(req.json())
 
+
+print("Récupérer la liste des produits (GET /api/produits)")
 print("get list of products.")
 print("---------------------")
 req = requests.get("http://127.0.0.1:5000/api/produits", headers={"token": token})
@@ -120,16 +134,22 @@ print("request status is "+ str(req.status_code))
 
 #print("request status is "+ str(req.json()))
 
+
+print("Récupérer la liste des commandes (GET /api/commandes) - Admin voit tout, client voit ses commandes")
 print("get list of carts.")
 print("---------------------")
 req = requests.get("http://127.0.0.1:5000/api/commandes", headers={"token": token})
 print("request status is "+ str(req.status_code))
 
+
+print("Consulter les lignes d'une commande (GET /api/commandes/{id}/lignes)")
 print("get list of cart items.")
 print("-----------------------")
 req = requests.get("http://127.0.0.1:5000/api/commandes/1/lignes", headers={"token": token})
 print("request status is "+ str(req.status_code))
 
+print("Inscription d'un nouvel utilisateur (POST /api/auth/register).")
+print("--------------------------------------------------------------")
 #print("register (flamant@club-internet.fr, antoine) as client.")
 #print("--------------------------------------------------")
 #req = requests.post("http://127.0.0.1:5000/api/auth/register", headers={"password": "antoine"}, 
@@ -141,8 +161,10 @@ print("request status is "+ str(req.status_code))
 #})
 #print("request status is "+ str(req.status_code))
 
+
+print("Connexion et génération de token JWT (POST /api/auth/login).")
 print("connect as (flamant@club-internet.fr,antoine) (client) and generate token.")
-print("---------------------------------------------------------------------")
+print("--------------------------------------------------------------------------")
 req = requests.post("http://127.0.0.1:5000/api/auth/login", headers={"password": "antoine"}, 
 json={
     'id': "flamant@club-internet.fr",
@@ -152,6 +174,8 @@ print("request status is "+ str(req.status_code))
 token_client = req.json().get("token")
 print("token is:"+ token_client)
 
+
+print("Créer une nouvelle commande (POST /api/commandes)")
 print("create a new command as client")
 print("------------------------------")
 req = requests.post("http://127.0.0.1:5000/api/commandes", headers={"token": token_client},
@@ -171,24 +195,27 @@ settings.init()
 #print(req.json())
 
 
+print("Récupérer la liste des commandes (GET /api/commandes) - Admin voit tout, client voit ses commandes")
 print("get list of carts as client.")
 print("----------------------------")
 req = requests.get("http://127.0.0.1:5000/api/commandes", headers={"token": token_client})
 print("request status is "+ str(req.status_code))
 
+print("Récupérer la liste des commandes (GET /api/commandes) - Admin voit tout, client voit ses commandes")
 print("get list of carts as administrator.")
 print("-----------------------------------")
 req = requests.get("http://127.0.0.1:5000/api/commandes", headers={"token": token})
 print("request status is "+ str(req.status_code))
 
-
+print("Récupérer une commande spécifique (GET /api/commandes/{id})")
 print("Récupérer une commande spécifique (GET /api/commandes/{id}) (client or administrator)")
 print("-------------------------------------------------------------------------------------")
 req = requests.get("http://127.0.0.1:5000/api/commandes/1", headers={"token": token})
 print("request status is "+ str(req.status_code))
 
 
-print("Modifier le statut d'une commande (PATCH /api/commandes/{id}) - Admin uniquement")
+print("Modifier le statut d'une commande (de processing a cancelled) (PATCH /api/commandes/{id}) - Admin uniquement")
+print("------------------------------------------------------------------------------------------------------------")
 req = requests.patch("http://127.0.0.1:5000/api/commandes/1", headers={"token": token},
 json={
     'cart_id': 2,
@@ -199,3 +226,5 @@ json={
             'quantity': 5
         }]})
 print("request status is "+ str(req.status_code))
+
+

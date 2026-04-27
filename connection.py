@@ -3,7 +3,7 @@ from flask import Flask, request, jsonify
 from datetime import datetime, timedelta
 from models import create_user, authenticate, User, read_products, Product, read_specific_product, get_list_of_users, create_product, update_product, delete_product, create_cart_when_not_exists, create_cart_item_when_not_exists
 from models import app, Cart, NoResultFound, CartItem, get_list_of_carts, get_list_of_cart_items
-from models import db, get_specific_cart
+from models import db, get_specific_cart, modify_command_status
 import array as arr
 import settings
 
@@ -236,5 +236,17 @@ def getLigneDeCommande(id):
     token = request.headers.get("token", "0")
     if decode_token(token):
         get_list_of_cart_items(id)
+        return {"message": "Ok !"}, 200
+    return {"error": "Jeton d'accès invalide."}, 401
+
+
+@app.route('/api/commandes/<id>', methods=["PATCH"])
+#"Modifier le statut d'une commande (PATCH /api/commandes/{id}) - Admin uniquement"
+def ModifyCommandStatus(id):
+    token = request.headers.get("token", "0")
+    payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+    role = payload.get("role") 
+    if decode_token(token) and role == 'administrateur':
+        modify_command_status(id)
         return {"message": "Ok !"}, 200
     return {"error": "Jeton d'accès invalide."}, 401

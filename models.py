@@ -349,3 +349,13 @@ def get_list_of_cart_items(id):
     print(all_cart_items)
     for cartItem in all_cart_items:
         print(cartItem)   
+
+def modify_command_status(id):
+    try:
+        cart = db.session.query(Cart).filter_by(id=int(id)).one()
+    except NoResultFound: 
+        raise NoResultFound("this cart is unknown")
+    cart.status = 'cancelled'
+    db.session.merge(cart)
+    db.session.commit()
+    print(cart)           
